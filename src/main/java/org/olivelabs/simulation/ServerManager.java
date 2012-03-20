@@ -1,6 +1,8 @@
 package org.olivelabs.simulation;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 
 public class ServerManager {
@@ -22,31 +24,31 @@ public class ServerManager {
 	}
 
 	public void serve(Request request){
-		
+
 		if(serversInUse.size()<=0 ||
-				(waitQueue.size()>=Constants.WAIT_QUEUE_SIZE && 
-						(serversInUse.size() + serversNotInUse.size()) < Constants.MAX_SERVER)) 
+				(waitQueue.size()>=Constants.WAIT_QUEUE_SIZE &&
+						(serversInUse.size() + serversNotInUse.size()) < Constants.MAX_SERVER))
 			addServer().serve(request);
-		
+
 		Server server = getBestServer();
 		if((server == null || waitQueue.size()>=1) && waitQueue.size() < Constants.WAIT_QUEUE_SIZE){
 			waitQueue.add(request);
 			return;
 		}
-		
+
 		if(server != null){
 			server.serve(request);
 			while(waitQueue.size()>0 && (server = getBestServer())!=null){
 				server.serve(waitQueue.get());
-				
+
 			}
 		}
 		else{
 			OutputStatistics.collectStatisticsForRejected(request);
-			
+
 		}
 	}
-	
+
 	private Server getBestServer() {
 		Server bestServer = null;
 		Iterator<Server> serverIterator = serversInUse.iterator();
@@ -88,7 +90,7 @@ public class ServerManager {
 		}
 		return serverToRemove;
 	}
-	
+
 	public void free(Server server, Request request){
 		server.free(request);
 		OutputStatistics.collectStatisticsForDispatched(request);
@@ -96,5 +98,38 @@ public class ServerManager {
 		while(waitQueue.size()>0 && ( bestServer = serverManager.getBestServer())!=null)
 			bestServer.serve(waitQueue.get());
 	}
-	
+
+	public int busySize(){
+		return this.serversInUse.size();
+	}
+
+	public int freeSize(){
+		return this.serversNotInUse.size();
+	}
+
+	public List<Server> getAllServers(){
+		List<Server> allServers = new ArrayList<Server>();
+		if(busySize()>0)
+			allServers.addAll(serversInUse);
+		if(freeSize()>0)
+			allServers.addAll(serversNotInUse);
+		return allServers;
+	}
+
+	public List<String> getServerHistories(){
+		List<Server> servers = ServerManager.getInstance().getAllServers();
+		List<String> serverHistories = new ArrayList<String>();
+
+		for(Server server : servers){
+			StringBuilder builder = new StringBuilder();
+			builder.append(String.format("Server [%1$2s]: currReqCount[%2$2s] => ", server.toString(), server.getRequestServed()));
+			for(ServerHistory history : server.serverHistory){
+				builder.append(String.format("%+10d-%+10d, ",history.startTime,history.endTime));
+
+			}
+			serverHistories.add(builder.toString());
+		}
+		return serverHistories;
+
+	}
 }

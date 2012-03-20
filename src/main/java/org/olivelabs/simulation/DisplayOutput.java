@@ -5,25 +5,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class DisplayOutput implements Runnable {
 
-BlockingQueue<StatisticsCollector> statistics = new LinkedBlockingQueue<StatisticsCollector>();
-	
-	public DisplayOutput(BlockingQueue<StatisticsCollector> statistics){
-		this.statistics = statistics;
+
+	public DisplayOutput(){
 	}
-	
+
 	@Override
 	public void run() {
-		while(true){
+		int count = 0;
+		while(SimulationRunner.running){
 			try {
-				Thread.currentThread().sleep(5000);
-				StatisticsCollector data = this.statistics.take();
-				/*System.out.println("Clock : "+data.simulationClock
-						+", Request Dipatched["+data.requestDipatchedCount+"], Rejected["+data.requestRejectedCount+"]"
-						+", Avg Wait ["+data.averageWaitTime+"], Avg Service ["+data.averageServiceTime+"]"
-						+", Servers ["+data.serversInUse+"], QueueSize["+data.requestInWaitQueue+"]"
-						);*/
+				Thread.sleep(1000);
+				StatisticsCollector data = OutputStatistics.getStats();
+				System.out.println(data);
+
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

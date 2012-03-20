@@ -10,5 +10,4 @@ public final class Request {
 	public long waitTime(){
 		return serviceBeginTime - arrivalTime;
 	}
-	
 }

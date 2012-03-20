@@ -1,5 +1,5 @@
 package org.olivelabs.simulation;
 
 public class SimulationClock {
-	static long CurrentTime = 0;
+	static  volatile long CurrentTime = 0;
 }

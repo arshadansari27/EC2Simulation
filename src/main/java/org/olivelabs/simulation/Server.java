@@ -9,6 +9,7 @@ public class Server {
 	long serverStartTime;
 	long serverEndTime;
 	List<ServerHistory> serverHistory;
+	long requestCount = 0;
 	public Server(int numberOfCurrentRequestsLimit) {
 		requestsBeingServed = new ArrayList<Request>();
 		this.numberOfCurrentRequestsLimit = numberOfCurrentRequestsLimit;
@@ -38,6 +39,7 @@ public class Server {
 					"Server cannot handle more requests than the limit set, concurrently!!!");
 		request.serviceBeginTime = SimulationClock.CurrentTime;
 		this.requestsBeingServed.add(request);
+		requestCount++;
 		EventGenerator.generateDispatchEvent(request, this);
 	}
 
@@ -58,6 +60,11 @@ public class Server {
 	public int getServerCapacity() {
 		return numberOfCurrentRequestsLimit - requestsBeingServed.size();
 	}
+
+	public long getRequestServed(){
+		return requestCount;
+	}
+
 }
 class ServerHistory{
 	public long startTime, endTime;

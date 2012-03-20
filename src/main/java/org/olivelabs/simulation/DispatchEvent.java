@@ -1,5 +1,8 @@
 package org.olivelabs.simulation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DispatchEvent extends Event {
 
 	Request request;
@@ -7,7 +10,7 @@ public class DispatchEvent extends Event {
 	EventManager eventManager;
 	RequestWaitQueue queue;
 	ServerManager serverManager;
-	
+
 	public DispatchEvent(long eventTime, Request request, Server server){
 		super();
 		this.eventTime = eventTime;
@@ -17,7 +20,7 @@ public class DispatchEvent extends Event {
 		queue = RequestWaitQueue.getInstance();
 		serverManager = ServerManager.getInstance();
 	}
-	
+
 	@Override
 	public void processEvent() {
 		SimulationClock.CurrentTime = this.eventTime;
