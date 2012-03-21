@@ -1,5 +1,6 @@
 package org.olivelabs.simulation;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class DispatchEvent extends Event {
 	Server server;
 	SimulationRunner simulator;
 
-	public DispatchEvent(long eventTime, Request request, Server server, SimulationRunner simulator){
+	public DispatchEvent(BigInteger eventTime, Request request, Server server, SimulationRunner simulator){
 		super();
 		this.eventTime = eventTime;
 		this.server = server;

@@ -1,7 +1,6 @@
 package org.olivelabs.simulation;
 
-import static org.junit.Assert.*;
-
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -28,19 +27,20 @@ public class ServerManagerTest {
 		for(int i = 0; i < 1000; i++){
 			Request request = new Request();
 			request.id = i;
+			request.arrivalTime = BigInteger.ONE;
+			request.serviceTime = BigInteger.ONE;
+			request.serviceBeginTime = BigInteger.ONE;
 			requests.add(request);
 		}
 		//OutputStatistics stats = new OutputStatistics(simulator);
 		for(Request request : requests){
 			simulator.getServerManager().serve(request);
 		}
-		System.out.println(simulator.getServerManager().serversInUse.size());
 		Assert.assertTrue(simulator.getServerManager().serversNotInUse.size()==0);
 		Iterator<Server>  serversInUse = simulator.getServerManager().serversInUse.iterator();
 		while(serversInUse.hasNext()){
 			Server server = serversInUse.next();
-			Assert.assertTrue(server.getRequestListSize()<=250);
-			Assert.assertTrue(server.getRequestListSize()>0);
+			Assert.assertTrue(server.getRequestListSize()>=1000);
 		}
 	}
 

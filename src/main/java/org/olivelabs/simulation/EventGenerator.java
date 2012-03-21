@@ -1,41 +1,45 @@
 package org.olivelabs.simulation;
 
+import java.math.BigInteger;
+
 public class EventGenerator {
 
-	public long totalRequest = 10000L;
-	public long requestCount = 0;
-	private SimulationRunner simulator;
+    public long totalRequest = 10000L;
+    public long requestCount = 0;
+    private SimulationRunner simulator;
 
-	public EventGenerator(SimulationRunner simulator){
-		this.simulator = simulator;
-	}
+    public EventGenerator(SimulationRunner simulator){
+        this.simulator = simulator;
+    }
 
-	public void generateNextArrivalEvent(){
-		if(requestCount == totalRequest){
-			return;
-		}
-		Request request = new Request();
-		request.id = requestCount++;
-		request.url = "/testUrl/"+ (requestCount%300);
-		request.arrivalTime = getNextArrivalTime();
-		request.serviceTime = getNextServiceTime();
-		simulator.getEventManager().addEvent(new ArrivalEvent(request.arrivalTime, request, simulator));
-	}
+    public void generateNextArrivalEvent(){
+        if(simulator.getClock().CurrentTime.compareTo(simulator.params.MAX_CLOCK) >=0){
+        	simulator.getEventManager().addEvent(new TerminalEvent(simulator.params.MAX_CLOCK));
+            return;
+        }
+        Request request = new Request();
+        request.id = requestCount++;
+        request.url = "/testUrl/"+ (requestCount%300);
+        request.arrivalTime = getNextArrivalTime();
+        request.serviceTime = getNextServiceTime();
+        simulator.getEventManager().addEvent(new ArrivalEvent(request.arrivalTime, request, simulator));
+    }
 
-	public void generateDispatchEvent(Request request, Server server){
+    public void generateDispatchEvent(Request request, Server server){
 
-		simulator.getEventManager().addEvent(new DispatchEvent(request.serviceBeginTime+request.serviceTime, request, server, simulator));
-	}
+    	BigInteger dispatchTime = new BigInteger(request.serviceBeginTime.toByteArray()).add(request.serviceTime);
+        simulator.getEventManager().addEvent(new DispatchEvent(dispatchTime, request, server, simulator));
+    }
 
-	private long getNextArrivalTime(){
-		long interArrivalTime = (long)(Math.random()*10);
+    private BigInteger getNextArrivalTime(){
 
-		return simulator.getClock().CurrentTime + interArrivalTime;
-	}
+        BigInteger interArrivalTime = new BigInteger((long)Math.random()*10 +"");
+        return interArrivalTime.add(simulator.getClock().CurrentTime);
+    }
 
-	private long getNextServiceTime(){
-		long serviceTime = (long)(Math.random()*10000);
+    private BigInteger getNextServiceTime(){
+    	BigInteger serviceTime = new BigInteger((long)Math.random()*10000 +"");
 
-		return serviceTime;
-	}
+        return serviceTime;
+    }
 }

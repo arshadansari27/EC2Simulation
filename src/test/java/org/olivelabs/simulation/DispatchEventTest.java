@@ -29,7 +29,7 @@ public class DispatchEventTest {
 	}
 
 	@Test
-	public void testProcessArrivalEvent() {
+	public void testProcessDispatchEvent() {
 		//EventGenerator.TOTAL_REQUEST = 10;
 
 		simulator.getEventGenerator().generateNextArrivalEvent();
@@ -40,8 +40,11 @@ public class DispatchEventTest {
 				DispatchEvent dEvent = (DispatchEvent) event;
 				requestList.add(dEvent.request);
 			}
+			if(1000<=requestList.size()){
+				break;
+			}
 		}
-		Assert.assertTrue(1000<=requestList.size());
+
 
 
 	}

@@ -1,6 +1,7 @@
 package org.olivelabs.simulation;
 
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import junit.framework.Assert;
@@ -20,6 +21,8 @@ public class ServerTest {
 		for(int i = 0; i < 100; i++){
 			Request request = new Request();
 			request.id = i;
+			request.arrivalTime = BigInteger.TEN;
+	        request.serviceTime = BigInteger.TEN;
 			requests.add(request);
 		}
 	}
@@ -62,12 +65,11 @@ public class ServerTest {
 	@Test
 	public void testServerTimeHistory(){
 		for(int i = 0; i < 10; i++){
-			server.setServerStartTime((long) (Math.random() * 1000000));
-			server.setServerEndTime((long) (Math.random() * 1000000));
+			server.setServerStartTime(new BigInteger(""+ i*2));
+			server.setServerEndTime(new BigInteger(""+ i*2+1));
 		}
 		for(ServerHistory serverhistory : server.serverHistory)
-			System.out.print("\n "+serverhistory.startTime+" --> "+serverhistory.endTime+", ");
-		System.out.println();
+			Assert.assertTrue(serverhistory.startTime.compareTo(serverhistory.endTime) < 0);
 	}
 
 	@After

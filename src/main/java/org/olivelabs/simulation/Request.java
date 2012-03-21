@@ -1,13 +1,15 @@
 package org.olivelabs.simulation;
 
+import java.math.BigInteger;
+
 public final class Request {
 	public String url;
 	public long id;
-	public long arrivalTime;
-	public long serviceTime;
-	public long serviceBeginTime;
-	public long dispatchTime;
-	public long waitTime(){
-		return serviceBeginTime - arrivalTime;
+	public BigInteger arrivalTime;
+	public BigInteger serviceTime;
+	public BigInteger serviceBeginTime;
+	public BigInteger dispatchTime;
+	public BigInteger waitTime(){
+		return serviceBeginTime.subtract(arrivalTime);
 	}
 }

@@ -1,6 +1,9 @@
 package org.olivelabs.simulation;
 
 import static org.junit.Assert.*;
+
+import java.math.BigInteger;
+
 import junit.framework.Assert;
 
 import org.junit.After;
@@ -25,13 +28,13 @@ public class EventManagerTest {
 		MockEvent mockEvent=null;
 		for(int i = 0; i < 1000; i++){
 			mockEvent = new MockEvent();
-			mockEvent.eventTime = (long)(Math.random() * 1000);
+			mockEvent.eventTime = new BigInteger((long)Math.random() * 1000 + "");
 			eventManager.addEvent(mockEvent);
 		}
 		Event event = null;
-		long currentTime = 0L;
+		BigInteger currentTime = BigInteger.ZERO;
 		while( ( event = eventManager.getNextEvent()) != null){
-			Assert.assertTrue(event.eventTime>=currentTime);
+			Assert.assertTrue(event.eventTime.compareTo(currentTime) >=0);
 			currentTime = event.eventTime;
 		}
 
@@ -43,7 +46,7 @@ public class EventManagerTest {
 		MockEvent mockEvent=null;
 		for(int i = 1; i <= 1000; i++){
 			mockEvent = new MockEvent();
-			mockEvent.eventTime = (long)(Math.random() * 1000);
+			mockEvent.eventTime = new BigInteger((long)Math.random() * 1000+"");
 			eventManager.addEvent(mockEvent);
 			Assert.assertTrue(eventManager.fel.size()==i);
 		}

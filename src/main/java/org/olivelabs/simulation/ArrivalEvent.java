@@ -1,12 +1,14 @@
 package org.olivelabs.simulation;
 
+import java.math.BigInteger;
+
 public class ArrivalEvent extends Event {
 
 	Request request;
 	SimulationRunner simulator;
 
 
-	public ArrivalEvent(long eventTime, Request request, SimulationRunner simulator){
+	public ArrivalEvent(BigInteger eventTime, Request request, SimulationRunner simulator){
 		super();
 		this.eventTime = eventTime;
 		this.request = request;

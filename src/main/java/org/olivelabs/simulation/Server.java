@@ -1,13 +1,14 @@
 package org.olivelabs.simulation;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
 	List<Request> requestsBeingServed;
 	int numberOfCurrentRequestsLimit;
-	long serverStartTime;
-	long serverEndTime;
+	BigInteger serverStartTime;
+	BigInteger serverEndTime;
 	List<ServerHistory> serverHistory;
 	long requestCount = 0;
 	SimulationRunner simulator;
@@ -18,19 +19,19 @@ public class Server {
 		serverHistory = new ArrayList<ServerHistory>();
 	}
 
-	public long getServerStartTime() {
+	public BigInteger getServerStartTime() {
 		return serverStartTime;
 	}
 
-	public void setServerStartTime(long serverStartTime) {
-		this.serverStartTime = serverStartTime;
+	public void setServerStartTime(BigInteger currentTime) {
+		this.serverStartTime = currentTime;
 	}
 
-	public long getServerEndTime() {
+	public BigInteger getServerEndTime() {
 		return serverEndTime;
 	}
 
-	public void setServerEndTime(long serverEndTime) {
+	public void setServerEndTime(BigInteger serverEndTime) {
 		this.serverEndTime = serverEndTime;
 		serverHistory.add(new ServerHistory(this.serverStartTime, this.serverEndTime));
 	}
@@ -51,8 +52,7 @@ public class Server {
 			throw new RuntimeException("Server does not have the request!!!");
 		request.dispatchTime = simulator.getClock().CurrentTime;
 		this.requestsBeingServed.remove(request);
-		//TODO: Check later if the following line is introducing any bug.. Test scenario is to be defined for same.
-		simulator.getServerManager().removeServer();
+
 	}
 
 	public int getRequestListSize() {
@@ -69,8 +69,8 @@ public class Server {
 
 }
 class ServerHistory{
-	public long startTime, endTime;
-	public ServerHistory(long startTime, long endTime){
+	public BigInteger startTime, endTime;
+	public ServerHistory(BigInteger startTime, BigInteger endTime){
 		this.startTime = startTime;
 		this.endTime = endTime;
 	}

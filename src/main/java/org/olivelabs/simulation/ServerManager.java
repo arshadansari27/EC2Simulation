@@ -91,6 +91,7 @@ public class ServerManager {
 		Server bestServer = null;
 		while(simulator.getWaitQueue().size()>0 && ( bestServer = simulator.getServerManager().getBestServer())!=null)
 			bestServer.serve(simulator.getWaitQueue().get());
+		removeServer();
 	}
 
 	public int busySize(){
@@ -118,7 +119,7 @@ public class ServerManager {
 			StringBuilder builder = new StringBuilder();
 			builder.append(String.format("Server [%1$2s]: currReqCount[%2$2s] => ", server.toString(), server.getRequestServed()));
 			for(ServerHistory history : server.serverHistory){
-				builder.append(String.format("%+10d-%+10d, ",history.startTime,history.endTime));
+				builder.append(String.format("%10d =>%10d, ",history.startTime,history.endTime));
 
 			}
 			serverHistories.add(builder.toString());

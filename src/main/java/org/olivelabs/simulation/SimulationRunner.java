@@ -56,7 +56,7 @@ public class SimulationRunner implements Runnable {
 		eventGenerator.generateNextArrivalEvent();
 		System.out.println("Simulation Begin Time : " + new Date());
 		System.out.print("[");
-		while ((event = eventManager.getNextEvent()) != null) {
+		while (!((event = eventManager.getNextEvent()) instanceof TerminalEvent)) {
 			event.processEvent();
 		}
 		System.out.println("]");

@@ -1,10 +1,13 @@
 package org.olivelabs.simulation;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 public class OutputStatistics {
-	public volatile long REQUEST_DISPATCHED= 0;
-	public volatile long REQUEST_REJECTED = 0;
-	public volatile long TOTAL_SERVICE_TIME = 0L;
-	public volatile long TOTAL_WAIT_TIME = 0L;
+	public volatile BigInteger REQUEST_DISPATCHED = BigInteger.ZERO;
+	public volatile BigInteger REQUEST_REJECTED = BigInteger.ZERO;
+	public volatile BigInteger TOTAL_SERVICE_TIME = BigInteger.ZERO;
+	public volatile BigInteger TOTAL_WAIT_TIME = BigInteger.ZERO;
 	public volatile double AVERAGE_WAIT_TIME = 0D;
 	public volatile double AVERAGE_SERVICE_TIME = 0D;
 	SimulationRunner simulator;
@@ -13,14 +16,14 @@ public class OutputStatistics {
 		this.simulator = simulator;
 	}
 	public void collectStatisticsForDispatched(Request request){
-		REQUEST_DISPATCHED++;
-		TOTAL_SERVICE_TIME += request.serviceTime;
-		TOTAL_WAIT_TIME += request.waitTime();
-		AVERAGE_WAIT_TIME = TOTAL_WAIT_TIME * 1.0 / REQUEST_DISPATCHED;
-		AVERAGE_SERVICE_TIME = TOTAL_SERVICE_TIME * 1.0 / REQUEST_DISPATCHED;
+		REQUEST_DISPATCHED = REQUEST_DISPATCHED.add(BigInteger.ONE);
+		TOTAL_SERVICE_TIME = TOTAL_SERVICE_TIME.add(request.serviceTime);
+		TOTAL_WAIT_TIME = TOTAL_WAIT_TIME.add(request.waitTime());
+		AVERAGE_WAIT_TIME = (new BigDecimal(TOTAL_WAIT_TIME).divide(new BigDecimal( REQUEST_DISPATCHED))).doubleValue();
+		AVERAGE_SERVICE_TIME = new BigDecimal(TOTAL_SERVICE_TIME).divide(new BigDecimal( REQUEST_DISPATCHED)).doubleValue();
 	}
 	public void collectStatisticsForRejected(Request request){
-			REQUEST_REJECTED++;
+			REQUEST_REJECTED.add(BigInteger.ONE);
 	}
 
 	public  StatisticsCollector getStats(){
