@@ -19,7 +19,7 @@ public class DispatchEventTest {
 
 	@Before
 	public void setUp() throws Exception {
-		simulator = new SimulationRunner(1000);
+		simulator = new SimulationRunner(new Parameters());
 		simulator.getEventManager().fel.clear();
 	}
 

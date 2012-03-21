@@ -12,14 +12,16 @@ public class SimulationRunner implements Runnable {
 	private SimulationClock clock;
 	private RequestWaitQueue waitQueue;
 	private OutputStatistics requestStats;
+	public Parameters params;
 
-	public SimulationRunner(long totalRequest){
+	public SimulationRunner(Parameters params){
 		this.clock = new SimulationClock();
 		this.waitQueue = new RequestWaitQueue();
 		this.eventManager = new EventManager();
 		this.serverManager = new ServerManager(this);
 		this.eventGenerator = new EventGenerator(this);
-		this.eventGenerator.totalRequest = totalRequest;
+		this.params = params;
+		this.eventGenerator.totalRequest = params.totalRequest;
 		this.requestStats = new OutputStatistics(this);
 		RUNNING = true;
 	}

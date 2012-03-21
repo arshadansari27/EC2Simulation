@@ -16,7 +16,7 @@ public class ServerTest {
 	@Before
 	public void setUp() throws Exception {
 
-		server = new Server(new SimulationRunner(100),200);
+		server = new Server(new SimulationRunner(new Parameters()),200);
 		for(int i = 0; i < 100; i++){
 			Request request = new Request();
 			request.id = i;

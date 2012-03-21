@@ -1,7 +1,5 @@
 package org.olivelabs.simulation;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class DisplayOutput implements Runnable {
 

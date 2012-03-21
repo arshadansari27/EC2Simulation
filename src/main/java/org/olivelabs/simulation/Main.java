@@ -10,7 +10,9 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-		SimulationRunner simulator = new SimulationRunner(10000000L);
+		Parameters params = new Parameters();
+		params.totalRequest = 10000000L;
+		SimulationRunner simulator = new SimulationRunner(params);
 		executor.execute(new DisplayOutput(simulator));
 
 		executor.execute(simulator);

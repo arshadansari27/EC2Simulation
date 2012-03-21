@@ -20,12 +20,12 @@ public class ServerManager {
 	public void serve(Request request){
 
 		if(serversInUse.size()<=0 ||
-				(simulator.getWaitQueue().size()>=Constants.WAIT_QUEUE_SIZE &&
-						(serversInUse.size() + serversNotInUse.size()) < Constants.MAX_SERVER))
+				(simulator.getWaitQueue().size()>=simulator.params.waitQueueMaxSize &&
+						(serversInUse.size() + serversNotInUse.size()) < simulator.params.maxServer))
 			addServer().serve(request);
 
 		Server server = getBestServer();
-		if((server == null || simulator.getWaitQueue().size()>=1) && simulator.getWaitQueue().size() < Constants.WAIT_QUEUE_SIZE){
+		if((server == null || simulator.getWaitQueue().size()>=1) && simulator.getWaitQueue().size() < simulator.params.waitQueueMaxSize){
 			simulator.getWaitQueue().add(request);
 			return;
 		}
@@ -59,10 +59,10 @@ public class ServerManager {
 	public Server addServer() {
 
 		Server server = null;
-		if((serversInUse.size() + serversNotInUse.size()) >=Constants.MAX_SERVER)
+		if((serversInUse.size() + serversNotInUse.size()) >=simulator.params.maxServer)
 			return server;
 		if (serversNotInUse.empty())
-			server = new Server(simulator, Constants.SERVER_CONCURRENT_REQUEST_LIMIT);
+			server = new Server(simulator, simulator.params.concurrentRequestLimit);
 		else
 			server = serversNotInUse.pop();
 		server.setServerStartTime(simulator.getClock().CurrentTime);
@@ -75,7 +75,7 @@ public class ServerManager {
 		Server serverToRemove = null;
 		while (serversInUse.size() > 1) {
 			serverToRemove = serversInUse.peek();
-			if (serverToRemove.getServerCapacity() >= Constants.SERVER_CONCURRENT_REQUEST_LIMIT) {
+			if (serverToRemove.getServerCapacity() >= simulator.params.concurrentRequestLimit) {
 				serverToRemove = serversInUse.pop();
 				serverToRemove.setServerEndTime(simulator.getClock().CurrentTime);
 				serversNotInUse.push(serverToRemove);

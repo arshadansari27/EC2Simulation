@@ -23,24 +23,16 @@ public class ServerManagerTest {
 
 	@Test
 	public void testServeFree() {
-		SimulationRunner simulator = new SimulationRunner(100);
+		SimulationRunner simulator = new SimulationRunner(new Parameters());
 		ArrayList<Request> requests = new ArrayList<Request>();
 		for(int i = 0; i < 1000; i++){
 			Request request = new Request();
 			request.id = i;
 			requests.add(request);
 		}
-		OutputStatistics stats = new OutputStatistics(simulator);
+		//OutputStatistics stats = new OutputStatistics(simulator);
 		for(Request request : requests){
 			simulator.getServerManager().serve(request);
-
-//			System.out.println("Request# "+ request.id
-//						+", RequestDispatched: "+stats.REQUEST_DISPATCHED
-//						+", RequestRejected: "+stats.REQUEST_REJECTED
-//						+", Servers In Use: "+simulator.getServerManager().serversInUse.size()
-//						+", Servers NotIn Use: "+simulator.getServerManager().serversNotInUse.size()
-//						+", WaitQueue size: "+simulator.getWaitQueue().queue.size()
-//					);
 		}
 		System.out.println(simulator.getServerManager().serversInUse.size());
 		Assert.assertTrue(simulator.getServerManager().serversNotInUse.size()==0);
@@ -54,7 +46,7 @@ public class ServerManagerTest {
 
 	@Test
 	public void testAddRemoveServer(){
-		SimulationRunner simulator = new SimulationRunner(100);
+		SimulationRunner simulator = new SimulationRunner(new Parameters());
 		ServerManager svrMgr = simulator.getServerManager();
 		svrMgr.serversInUse.clear();
 		svrMgr.serversNotInUse.clear();

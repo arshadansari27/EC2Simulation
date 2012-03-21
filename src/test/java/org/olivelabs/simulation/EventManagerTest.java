@@ -12,7 +12,7 @@ public class EventManagerTest {
 	EventManager eventManager;
 	@Before
 	public void setUp() throws Exception {
-		eventManager = new SimulationRunner(1000).getEventManager();
+		eventManager = new SimulationRunner(new Parameters()).getEventManager();
 
 	}
 

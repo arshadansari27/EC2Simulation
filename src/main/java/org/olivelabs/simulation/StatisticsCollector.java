@@ -1,6 +1,7 @@
 package org.olivelabs.simulation;
 
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 public class StatisticsCollector implements Serializable{
     /**
@@ -18,7 +19,8 @@ public class StatisticsCollector implements Serializable{
 
     public String toString(){
     	StringBuilder builder = new StringBuilder();
-    	builder.append(String.format("Clock : %+10d\t", simulationClock));
+    	builder.append(String.format("Clock : %d min, %d sec\t",TimeUnit.MILLISECONDS.toMinutes(simulationClock), TimeUnit.MILLISECONDS.toSeconds(simulationClock) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(simulationClock))));
+
     	builder.append(String.format("RequestCount : %+10d\t", requestDipatchedCount+requestRejectedCount));
     	builder.append(String.format("Waiting : %+10d\t", requestInWaitQueue));
     	builder.append(String.format("Servers : %+10d\t", serversInUse));
