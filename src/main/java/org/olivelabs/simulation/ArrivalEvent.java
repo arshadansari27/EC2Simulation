@@ -17,10 +17,12 @@ public class ArrivalEvent extends Event {
 
 	@Override
 	public void processEvent() {
-		System.out.println(simulator.getClock().CurrentTime.compareTo(this.eventTime));
-		simulator.getClock().CurrentTime = this.eventTime;
-		simulator.getServerManager().serve(request);
 		simulator.getEventGenerator().generateNextArrivalEvent();
+
+		if(simulator.getClock().CurrentTime.get().compareTo(this.eventTime) <= 0){
+			simulator.getClock().CurrentTime.set(this.eventTime);
+			simulator.getServerManager().serve(request);
+		}
 	}
 
 

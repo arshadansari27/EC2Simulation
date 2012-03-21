@@ -13,7 +13,7 @@ public class EventGenerator {
     }
 
     public void generateNextArrivalEvent(){
-        if(simulator.getClock().CurrentTime.compareTo(simulator.params.MAX_CLOCK) >=0){
+        if(simulator.getClock().CurrentTime.get().compareTo(simulator.params.MAX_CLOCK) >=0){
         	simulator.getEventManager().addEvent(new TerminalEvent(simulator.params.MAX_CLOCK));
             return;
         }
@@ -33,12 +33,12 @@ public class EventGenerator {
 
     private BigInteger getNextArrivalTime(){
 
-        BigInteger interArrivalTime = new BigInteger((long)(Math.random()*100) +"");
-        return interArrivalTime.add(simulator.getClock().CurrentTime);
+        BigInteger interArrivalTime = new BigInteger((long)(Math.random()*10) +"");
+        return interArrivalTime.add(simulator.getClock().CurrentTime.get());
     }
 
     private BigInteger getNextServiceTime(){
-    	BigInteger serviceTime = new BigInteger((long)(Math.random()*10000) +"");
+    	BigInteger serviceTime = new BigInteger((long)(Math.random()*100) +"");
 
         return serviceTime;
     }

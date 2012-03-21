@@ -40,7 +40,7 @@ public class Server {
 		if (requestsBeingServed.size() >= numberOfCurrentRequestsLimit)
 			throw new RuntimeException(
 					"Server cannot handle more requests than the limit set, concurrently!!!");
-		request.serviceBeginTime = simulator.getClock().CurrentTime;
+		request.serviceBeginTime = simulator.getClock().CurrentTime.get();
 		this.requestsBeingServed.add(request);
 		requestCount++;
 		simulator.getEventGenerator().generateDispatchEvent(request, this);
@@ -50,7 +50,7 @@ public class Server {
 		if (requestsBeingServed.size() <= 0
 				|| !requestsBeingServed.contains(request))
 			throw new RuntimeException("Server does not have the request!!!");
-		request.dispatchTime = simulator.getClock().CurrentTime;
+		request.dispatchTime = simulator.getClock().CurrentTime.get();
 		this.requestsBeingServed.remove(request);
 
 	}

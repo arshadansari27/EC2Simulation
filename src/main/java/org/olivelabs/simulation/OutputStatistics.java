@@ -30,7 +30,7 @@ public class OutputStatistics {
 
 	public  StatisticsCollector getStats(){
 		StatisticsCollector data = new StatisticsCollector();
-		data.simulationClock = simulator.getClock().CurrentTime;
+		data.simulationClock = simulator.getClock().CurrentTime.get();
 		data.requestDipatchedCount= REQUEST_DISPATCHED;
 		data.requestRejectedCount = REQUEST_REJECTED;
 		data.requestInWaitQueue = simulator.getWaitQueue().size();

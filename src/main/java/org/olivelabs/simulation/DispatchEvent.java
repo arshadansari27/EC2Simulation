@@ -20,7 +20,7 @@ public class DispatchEvent extends Event {
 
 	@Override
 	public void processEvent() {
-		simulator.getClock().CurrentTime = this.eventTime;
+		simulator.getClock().CurrentTime.set(this.eventTime);
 		simulator.getServerManager().free(this.server, this.request);
 	}
 

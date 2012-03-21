@@ -65,7 +65,7 @@ public class ServerManager {
 			server = new Server(simulator, simulator.params.concurrentRequestLimit);
 		else
 			server = serversNotInUse.pop();
-		server.setServerStartTime(simulator.getClock().CurrentTime);
+		server.setServerStartTime(simulator.getClock().CurrentTime.get());
 		this.serversInUse.add(server);
 		return server;
 	}
@@ -73,11 +73,11 @@ public class ServerManager {
 	public Server removeServer() {
 		// TODO:Improve this code
 		Server serverToRemove = null;
-		while (serversInUse.size() > 1) {
+		while (serversInUse.size() > 1 || (!simulator.RUNNING && serversInUse.size()==1)) {
 			serverToRemove = serversInUse.peek();
-			if (serverToRemove.getServerCapacity() >= simulator.params.concurrentRequestLimit) {
+			if (serverToRemove.getServerCapacity() >= simulator.params.concurrentRequestLimit || !simulator.RUNNING ) {
 				serverToRemove = serversInUse.pop();
-				serverToRemove.setServerEndTime(simulator.getClock().CurrentTime);
+				serverToRemove.setServerEndTime(simulator.getClock().CurrentTime.get());
 				serversNotInUse.push(serverToRemove);
 			} else
 				break;
@@ -112,6 +112,7 @@ public class ServerManager {
 	}
 
 	public List<String> getServerHistories(){
+
 		List<Server> servers = getAllServers();
 		List<String> serverHistories = new ArrayList<String>();
 

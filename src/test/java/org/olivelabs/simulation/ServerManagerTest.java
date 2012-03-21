@@ -24,12 +24,12 @@ public class ServerManagerTest {
 	public void testServeFree() {
 		SimulationRunner simulator = new SimulationRunner(new Parameters());
 		ArrayList<Request> requests = new ArrayList<Request>();
-		for(int i = 0; i < 1000; i++){
+		for(int i = 0; i < simulator.params.concurrentRequestLimit+100; i++){
 			Request request = new Request();
 			request.id = i;
-			request.arrivalTime = BigInteger.ONE;
-			request.serviceTime = BigInteger.ONE;
-			request.serviceBeginTime = BigInteger.ONE;
+			request.arrivalTime = new BigInteger(""+(i*2));
+			request.serviceTime = new BigInteger(""+(i*2+1));
+			request.serviceBeginTime = new BigInteger(""+(long)(Math.random()*100000));
 			requests.add(request);
 		}
 		//OutputStatistics stats = new OutputStatistics(simulator);
@@ -40,7 +40,7 @@ public class ServerManagerTest {
 		Iterator<Server>  serversInUse = simulator.getServerManager().serversInUse.iterator();
 		while(serversInUse.hasNext()){
 			Server server = serversInUse.next();
-			Assert.assertTrue(server.getRequestListSize()>=1000);
+			Assert.assertTrue(server.getRequestListSize()>=simulator.params.concurrentRequestLimit);
 		}
 	}
 

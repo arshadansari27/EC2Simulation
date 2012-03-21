@@ -12,7 +12,7 @@ public class Main {
 	public static void main(String[] args) {
 		ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 		Parameters params = new Parameters();
-		params.MAX_CLOCK = new BigInteger("3600000000");
+		params.MAX_CLOCK = new BigInteger("600000000");
 		SimulationRunner simulator = new SimulationRunner(params);
 		executor.execute(new DisplayOutput(simulator));
 

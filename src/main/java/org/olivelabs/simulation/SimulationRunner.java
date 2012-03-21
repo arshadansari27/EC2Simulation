@@ -61,10 +61,11 @@ public class SimulationRunner implements Runnable {
 		}
 		System.out.println("]");
 		System.out.println("Simulation End Time : " + new Date());
+		RUNNING = false;
+		this.serverManager.removeServer();
 		for(String history : serverDetails()){
 			System.out.println(history);
 		}
-		RUNNING = false;
 	}
 
 	public double percentComplete(){
