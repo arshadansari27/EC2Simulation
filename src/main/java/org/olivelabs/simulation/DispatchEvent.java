@@ -7,24 +7,20 @@ public class DispatchEvent extends Event {
 
 	Request request;
 	Server server;
-	EventManager eventManager;
-	RequestWaitQueue queue;
-	ServerManager serverManager;
+	SimulationRunner simulator;
 
-	public DispatchEvent(long eventTime, Request request, Server server){
+	public DispatchEvent(long eventTime, Request request, Server server, SimulationRunner simulator){
 		super();
 		this.eventTime = eventTime;
 		this.server = server;
 		this.request = request;
-		eventManager = EventManager.getInstance();
-		queue = RequestWaitQueue.getInstance();
-		serverManager = ServerManager.getInstance();
+		this.simulator = simulator;
 	}
 
 	@Override
 	public void processEvent() {
-		SimulationClock.CurrentTime = this.eventTime;
-		serverManager.free(this.server, this.request);
+		simulator.getClock().CurrentTime = this.eventTime;
+		simulator.getServerManager().free(this.server, this.request);
 	}
 
 }

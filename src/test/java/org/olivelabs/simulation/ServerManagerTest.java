@@ -23,49 +23,56 @@ public class ServerManagerTest {
 
 	@Test
 	public void testServeFree() {
+		SimulationRunner simulator = new SimulationRunner(100);
 		ArrayList<Request> requests = new ArrayList<Request>();
 		for(int i = 0; i < 1000; i++){
 			Request request = new Request();
 			request.id = i;
 			requests.add(request);
 		}
+		OutputStatistics stats = new OutputStatistics(simulator);
 		for(Request request : requests){
-			ServerManager.getInstance().serve(request);
-			System.out.println("Request# "+ request.id
-						+", RequestDispatched: "+OutputStatistics.REQUEST_DISPATCHED
-						+", RequestRejected: "+OutputStatistics.REQUEST_REJECTED
-						+", Servers In Use: "+ServerManager.getInstance().serversInUse.size()
-						+", Servers NotIn Use: "+ServerManager.getInstance().serversNotInUse.size()
-						+", WaitQueue size: "+RequestWaitQueue.getInstance().queue.size()
-					);
+			simulator.getServerManager().serve(request);
+
+//			System.out.println("Request# "+ request.id
+//						+", RequestDispatched: "+stats.REQUEST_DISPATCHED
+//						+", RequestRejected: "+stats.REQUEST_REJECTED
+//						+", Servers In Use: "+simulator.getServerManager().serversInUse.size()
+//						+", Servers NotIn Use: "+simulator.getServerManager().serversNotInUse.size()
+//						+", WaitQueue size: "+simulator.getWaitQueue().queue.size()
+//					);
 		}
-		System.out.println(ServerManager.getInstance().serversInUse.size());
-		Assert.assertTrue(ServerManager.getInstance().serversNotInUse.size()==0);
-		Iterator<Server>  serversInUse = ServerManager.getInstance().serversInUse.iterator();
+		System.out.println(simulator.getServerManager().serversInUse.size());
+		Assert.assertTrue(simulator.getServerManager().serversNotInUse.size()==0);
+		Iterator<Server>  serversInUse = simulator.getServerManager().serversInUse.iterator();
 		while(serversInUse.hasNext()){
-			Assert.assertTrue(serversInUse.next().getRequestListSize()==200);
+			Server server = serversInUse.next();
+			Assert.assertTrue(server.getRequestListSize()<=250);
+			Assert.assertTrue(server.getRequestListSize()>0);
 		}
 	}
-	
+
 	@Test
 	public void testAddRemoveServer(){
-		ServerManager.getInstance().serversInUse.clear();
-		ServerManager.getInstance().serversNotInUse.clear();
-		ServerManager.getInstance().addServer();
-		Assert.assertTrue(ServerManager.getInstance().serversInUse.size()==1);
-		Assert.assertTrue(ServerManager.getInstance().serversNotInUse.size()==0);
-		ServerManager.getInstance().addServer();
-		Assert.assertTrue(ServerManager.getInstance().serversInUse.size()==2);
-		Assert.assertTrue(ServerManager.getInstance().serversNotInUse.size()==0);
-		ServerManager.getInstance().addServer();
-		Assert.assertTrue(ServerManager.getInstance().serversInUse.size()==3);
-		Assert.assertTrue(ServerManager.getInstance().serversNotInUse.size()==0);
-		ServerManager.getInstance().addServer();
-		Assert.assertTrue(ServerManager.getInstance().serversInUse.size()==4);
-		Assert.assertTrue(ServerManager.getInstance().serversNotInUse.size()==0);
-		ServerManager.getInstance().removeServer();
-		Assert.assertTrue(ServerManager.getInstance().serversInUse.size()==1);
-		Assert.assertTrue(ServerManager.getInstance().serversNotInUse.size()==3);
+		SimulationRunner simulator = new SimulationRunner(100);
+		ServerManager svrMgr = simulator.getServerManager();
+		svrMgr.serversInUse.clear();
+		svrMgr.serversNotInUse.clear();
+		svrMgr.addServer();
+		Assert.assertTrue(svrMgr.serversInUse.size()==1);
+		Assert.assertTrue(svrMgr.serversNotInUse.size()==0);
+		svrMgr.addServer();
+		Assert.assertTrue(svrMgr.serversInUse.size()==2);
+		Assert.assertTrue(svrMgr.serversNotInUse.size()==0);
+		svrMgr.addServer();
+		Assert.assertTrue(svrMgr.serversInUse.size()==3);
+		Assert.assertTrue(svrMgr.serversNotInUse.size()==0);
+		svrMgr.addServer();
+		Assert.assertTrue(svrMgr.serversInUse.size()==4);
+		Assert.assertTrue(svrMgr.serversNotInUse.size()==0);
+		svrMgr.removeServer();
+		Assert.assertTrue(svrMgr.serversInUse.size()==1);
+		Assert.assertTrue(svrMgr.serversNotInUse.size()==3);
 	}
 
 }

@@ -10,7 +10,9 @@ public class Server {
 	long serverEndTime;
 	List<ServerHistory> serverHistory;
 	long requestCount = 0;
-	public Server(int numberOfCurrentRequestsLimit) {
+	SimulationRunner simulator;
+	public Server(SimulationRunner simulator, int numberOfCurrentRequestsLimit) {
+		this.simulator = simulator;
 		requestsBeingServed = new ArrayList<Request>();
 		this.numberOfCurrentRequestsLimit = numberOfCurrentRequestsLimit;
 		serverHistory = new ArrayList<ServerHistory>();
@@ -37,20 +39,20 @@ public class Server {
 		if (requestsBeingServed.size() >= numberOfCurrentRequestsLimit)
 			throw new RuntimeException(
 					"Server cannot handle more requests than the limit set, concurrently!!!");
-		request.serviceBeginTime = SimulationClock.CurrentTime;
+		request.serviceBeginTime = simulator.getClock().CurrentTime;
 		this.requestsBeingServed.add(request);
 		requestCount++;
-		EventGenerator.generateDispatchEvent(request, this);
+		simulator.getEventGenerator().generateDispatchEvent(request, this);
 	}
 
 	public void free(Request request) {
 		if (requestsBeingServed.size() <= 0
 				|| !requestsBeingServed.contains(request))
 			throw new RuntimeException("Server does not have the request!!!");
-		request.dispatchTime = SimulationClock.CurrentTime;
+		request.dispatchTime = simulator.getClock().CurrentTime;
 		this.requestsBeingServed.remove(request);
 		//TODO: Check later if the following line is introducing any bug.. Test scenario is to be defined for same.
-		ServerManager.getInstance().removeServer();
+		simulator.getServerManager().removeServer();
 	}
 
 	public int getRequestListSize() {

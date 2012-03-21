@@ -2,16 +2,10 @@ package org.olivelabs.simulation;
 
 public class EventManager {
 	FEL<Event> fel ;
-	static EventManager eventManager = null;
-	private EventManager(){
+	public EventManager(){
 		fel = new FEL<Event>();
 	}
 
-	public static EventManager getInstance(){
-		if(eventManager == null)
-			eventManager = new EventManager();
-		return eventManager;
-	}
 
 
 	public Event getNextEvent(){

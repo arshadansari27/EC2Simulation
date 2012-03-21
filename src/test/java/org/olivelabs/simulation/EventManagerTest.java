@@ -12,8 +12,8 @@ public class EventManagerTest {
 	EventManager eventManager;
 	@Before
 	public void setUp() throws Exception {
-		eventManager = EventManager.getInstance();
-		
+		eventManager = new SimulationRunner(1000).getEventManager();
+
 	}
 
 	@After
@@ -34,7 +34,7 @@ public class EventManagerTest {
 			Assert.assertTrue(event.eventTime>=currentTime);
 			currentTime = event.eventTime;
 		}
-		
+
 	}
 
 	@Test

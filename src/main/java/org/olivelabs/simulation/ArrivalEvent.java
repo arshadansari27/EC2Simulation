@@ -3,24 +3,22 @@ package org.olivelabs.simulation;
 public class ArrivalEvent extends Event {
 
 	Request request;
-	EventManager eventManager;
-	RequestWaitQueue queue;
-	ServerManager serverManager;
-	public ArrivalEvent(long eventTime, Request request){
+	SimulationRunner simulator;
+
+
+	public ArrivalEvent(long eventTime, Request request, SimulationRunner simulator){
 		super();
 		this.eventTime = eventTime;
 		this.request = request;
-		eventManager = EventManager.getInstance();
-		queue = RequestWaitQueue.getInstance();
-		serverManager = ServerManager.getInstance();
+		this.simulator = simulator;
 	}
-	
+
 	@Override
 	public void processEvent() {
-		SimulationClock.CurrentTime = this.eventTime;
-		serverManager.serve(request);
-		EventGenerator.generateNextArrivalEvent();
+		simulator.getClock().CurrentTime = this.eventTime;
+		simulator.getServerManager().serve(request);
+		simulator.getEventGenerator().generateNextArrivalEvent();
 	}
-	
-	
+
+
 }

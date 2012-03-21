@@ -5,17 +5,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class DisplayOutput implements Runnable {
 
-
-	public DisplayOutput(){
+	SimulationRunner simulator;
+	public DisplayOutput(SimulationRunner simulator){
+		this.simulator = simulator;
 	}
 
 	@Override
 	public void run() {
 		int count = 0;
-		while(SimulationRunner.running){
+		while(simulator.RUNNING){
 			try {
 				Thread.sleep(1000);
-				StatisticsCollector data = OutputStatistics.getStats();
+				StatisticsCollector data = simulator.getRequestStats().getStats();
 				System.out.println(data);
 
 			} catch (InterruptedException e) {

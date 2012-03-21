@@ -13,38 +13,33 @@ import org.junit.Test;
 
 public class ArrivalEventTest {
 
-	private EventManager eventMgr;
+	private SimulationRunner simulator;
 	private static List<Request> requestList = new ArrayList<Request>();
 
 	@Before
 	public void setUp() throws Exception {
-		eventMgr = EventManager.getInstance();
-		eventMgr.fel.clear();
+		simulator = new SimulationRunner(1000);
+		simulator.getEventManager().fel.clear();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		eventMgr.fel.clear();
+		simulator.getEventManager().fel.clear();
 	}
 
 	@Test
 	public void testProcessArrivalEvent() {
 		//EventGenerator.TOTAL_REQUEST = 10;
-		EventGenerator.generateNextArrivalEvent();
-		System.out.println("Initial FEL SIZE :" + eventMgr.fel.size());
+		simulator.getEventGenerator().generateNextArrivalEvent();
 		Event event = null;
-		while ((event = eventMgr.getNextEvent()) != null) {
-			System.out.print("Current FEL SIZE :" + eventMgr.fel.size());
-			System.out.print("\tWait Queue Size : "+RequestWaitQueue.getInstance().size());
-			System.out.print("\tServers In Use: "+ServerManager.getInstance().serversInUse.size());
-			System.out.println("\tServers Not In Use: "+ServerManager.getInstance().serversNotInUse.size());
+		while ((event = simulator.getEventManager().getNextEvent()) != null) {
 			if (event instanceof ArrivalEvent) {
 				ArrivalEvent arrEvent = (ArrivalEvent) event;
 				requestList.add(arrEvent.request);
 				arrEvent.processEvent();
-			} else
-				System.out.println("Dispatching!");
+			}
 		}
+		Assert.assertTrue(1000<=requestList.size());
 
 	}
 }

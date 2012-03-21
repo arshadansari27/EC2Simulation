@@ -5,16 +5,56 @@ import java.util.List;
 
 public class SimulationRunner implements Runnable {
 
-	public static volatile boolean running;
+	public volatile boolean RUNNING;
+	private EventGenerator eventGenerator;
+	private ServerManager serverManager;
+	private EventManager eventManager;
+	private SimulationClock clock;
+	private RequestWaitQueue waitQueue;
+	private OutputStatistics requestStats;
+
+	public SimulationRunner(long totalRequest){
+		this.clock = new SimulationClock();
+		this.waitQueue = new RequestWaitQueue();
+		this.eventManager = new EventManager();
+		this.serverManager = new ServerManager(this);
+		this.eventGenerator = new EventGenerator(this);
+		this.eventGenerator.totalRequest = totalRequest;
+		this.requestStats = new OutputStatistics(this);
+		RUNNING = true;
+	}
+
+	public OutputStatistics getRequestStats(){
+		return this.requestStats;
+	}
+
+	public RequestWaitQueue getWaitQueue(){
+		return this.waitQueue;
+	}
+
+	public SimulationClock getClock(){
+		return this.clock;
+	}
+
+	public EventManager getEventManager(){
+		return this.eventManager;
+	}
+
+	public EventGenerator getEventGenerator(){
+		return this.eventGenerator;
+	}
+
+	public ServerManager getServerManager(){
+		return this.serverManager;
+	}
 
 	@Override
 	public void run() {
-		running = true;
 		Event event = null;
-		EventGenerator.generateNextArrivalEvent();
+		eventGenerator.generateNextArrivalEvent();
 		System.out.println("Simulation Begin Time : " + new Date());
 		System.out.print("[");
-		while ((event = EventManager.getInstance().getNextEvent()) != null) {
+		while ((event = eventManager.getNextEvent()) != null) {
 			event.processEvent();
 		}
 		System.out.println("]");
@@ -22,15 +62,15 @@ public class SimulationRunner implements Runnable {
 		for(String history : serverDetails()){
 			System.out.println(history);
 		}
-		running = false;
+		RUNNING = false;
 	}
 
-	public static double percentComplete(){
-		return (EventGenerator.REQUEST_COUNT*1.0/EventGenerator.TOTAL_REQUEST) * 100;
+	public double percentComplete(){
+		return (eventGenerator.requestCount*1.0/eventGenerator.totalRequest) * 100;
 	}
 
-	public static List<String> serverDetails(){
-		return ServerManager.getInstance().getServerHistories();
+	public List<String> serverDetails(){
+		return serverManager.getServerHistories();
 	}
 
 }

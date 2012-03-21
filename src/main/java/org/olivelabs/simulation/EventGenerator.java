@@ -2,34 +2,38 @@ package org.olivelabs.simulation;
 
 public class EventGenerator {
 
-	public static long TOTAL_REQUEST = 10000L;
-	public static long REQUEST_COUNT = 0;
+	public long totalRequest = 10000L;
+	public long requestCount = 0;
+	private SimulationRunner simulator;
 
-	public static void generateNextArrivalEvent(){
-		if(REQUEST_COUNT == TOTAL_REQUEST){
-			//EventManager.getInstance().addEvent(new TerminalEvent(Long.MAX_VALUE));
+	public EventGenerator(SimulationRunner simulator){
+		this.simulator = simulator;
+	}
+
+	public void generateNextArrivalEvent(){
+		if(requestCount == totalRequest){
 			return;
 		}
 		Request request = new Request();
-		request.id = REQUEST_COUNT++;
-		request.url = "/testUrl/"+ (REQUEST_COUNT%300);
+		request.id = requestCount++;
+		request.url = "/testUrl/"+ (requestCount%300);
 		request.arrivalTime = getNextArrivalTime();
 		request.serviceTime = getNextServiceTime();
-		EventManager.getInstance().addEvent(new ArrivalEvent(request.arrivalTime, request));
+		simulator.getEventManager().addEvent(new ArrivalEvent(request.arrivalTime, request, simulator));
 	}
 
-	public static void generateDispatchEvent(Request request, Server server){
+	public void generateDispatchEvent(Request request, Server server){
 
-		EventManager.getInstance().addEvent(new DispatchEvent(request.serviceBeginTime+request.serviceTime, request, server));
+		simulator.getEventManager().addEvent(new DispatchEvent(request.serviceBeginTime+request.serviceTime, request, server, simulator));
 	}
 
-	private static long getNextArrivalTime(){
+	private long getNextArrivalTime(){
 		long interArrivalTime = (long)(Math.random()*10);
 
-		return SimulationClock.CurrentTime + interArrivalTime;
+		return simulator.getClock().CurrentTime + interArrivalTime;
 	}
 
-	private static long getNextServiceTime(){
+	private long getNextServiceTime(){
 		long serviceTime = (long)(Math.random()*10000);
 
 		return serviceTime;

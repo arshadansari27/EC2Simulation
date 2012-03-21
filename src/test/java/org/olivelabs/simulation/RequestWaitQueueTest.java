@@ -12,7 +12,7 @@ public class RequestWaitQueueTest {
 	RequestWaitQueue queue;
 	@Before
 	public void setUp() throws Exception {
-		queue = RequestWaitQueue.getInstance();
+		queue = new RequestWaitQueue();
 		queue.queue.clear();
 	}
 
@@ -32,7 +32,7 @@ public class RequestWaitQueueTest {
 			currentId = request2.id;
 		}
 	}
-	
+
 	@After
 	public void tearDown() throws Exception {
 	}

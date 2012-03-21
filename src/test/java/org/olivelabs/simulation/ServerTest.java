@@ -15,7 +15,8 @@ public class ServerTest {
 	ArrayList<Request> requests = new ArrayList<Request>();
 	@Before
 	public void setUp() throws Exception {
-		server = new Server(200);
+
+		server = new Server(new SimulationRunner(100),200);
 		for(int i = 0; i < 100; i++){
 			Request request = new Request();
 			request.id = i;
@@ -27,11 +28,11 @@ public class ServerTest {
 	public void testServe(){
 		for(Request request : requests)
 			server.serve(request);
-		
+
 		Assert.assertTrue(server.getRequestListSize() == 100);
 		Assert.assertTrue(server.getServerCapacity() == 100);
 	}
-	
+
 	@Test
 	public void testFree(){
 		for(Request request : requests)
@@ -41,7 +42,7 @@ public class ServerTest {
 		Assert.assertTrue(server.getRequestListSize() == 0);
 		Assert.assertTrue(server.getServerCapacity() == 200);
 	}
-	
+
 	@Test
 	public void testServerCapacity(){
 		int count = 200;
@@ -54,11 +55,11 @@ public class ServerTest {
 			Assert.assertTrue(server.getServerCapacity() == ++count);
 		}
 
-		
+
 	}
-	
-	
-	@Test 
+
+
+	@Test
 	public void testServerTimeHistory(){
 		for(int i = 0; i < 10; i++){
 			server.setServerStartTime((long) (Math.random() * 1000000));
@@ -68,7 +69,7 @@ public class ServerTest {
 			System.out.print("\n "+serverhistory.startTime+" --> "+serverhistory.endTime+", ");
 		System.out.println();
 	}
-	
+
 	@After
 	public void tearDown() throws Exception {
 	}

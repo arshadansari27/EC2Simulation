@@ -9,42 +9,36 @@ public class ServerManager {
 
 	Stack<Server> serversInUse;
 	Stack<Server> serversNotInUse;
-	static ServerManager serverManager = null;
-    RequestWaitQueue waitQueue;
-	private ServerManager() {
+    private SimulationRunner simulator;
+
+	public ServerManager(SimulationRunner simulator) {
+		this.simulator = simulator;
 		serversInUse = new Stack<Server>();
 		serversNotInUse = new Stack<Server>();
-		waitQueue = RequestWaitQueue.getInstance();
-	}
-
-	public static ServerManager getInstance() {
-		if (serverManager == null)
-			serverManager = new ServerManager();
-		return serverManager;
 	}
 
 	public void serve(Request request){
 
 		if(serversInUse.size()<=0 ||
-				(waitQueue.size()>=Constants.WAIT_QUEUE_SIZE &&
+				(simulator.getWaitQueue().size()>=Constants.WAIT_QUEUE_SIZE &&
 						(serversInUse.size() + serversNotInUse.size()) < Constants.MAX_SERVER))
 			addServer().serve(request);
 
 		Server server = getBestServer();
-		if((server == null || waitQueue.size()>=1) && waitQueue.size() < Constants.WAIT_QUEUE_SIZE){
-			waitQueue.add(request);
+		if((server == null || simulator.getWaitQueue().size()>=1) && simulator.getWaitQueue().size() < Constants.WAIT_QUEUE_SIZE){
+			simulator.getWaitQueue().add(request);
 			return;
 		}
 
 		if(server != null){
 			server.serve(request);
-			while(waitQueue.size()>0 && (server = getBestServer())!=null){
-				server.serve(waitQueue.get());
+			while(simulator.getWaitQueue().size()>0 && (server = getBestServer())!=null){
+				server.serve(simulator.getWaitQueue().get());
 
 			}
 		}
 		else{
-			OutputStatistics.collectStatisticsForRejected(request);
+			simulator.getRequestStats().collectStatisticsForRejected(request);
 
 		}
 	}
@@ -68,10 +62,10 @@ public class ServerManager {
 		if((serversInUse.size() + serversNotInUse.size()) >=Constants.MAX_SERVER)
 			return server;
 		if (serversNotInUse.empty())
-			server = new Server(Constants.SERVER_CONCURRENT_REQUEST_LIMIT);
+			server = new Server(simulator, Constants.SERVER_CONCURRENT_REQUEST_LIMIT);
 		else
 			server = serversNotInUse.pop();
-		server.setServerStartTime(SimulationClock.CurrentTime);
+		server.setServerStartTime(simulator.getClock().CurrentTime);
 		this.serversInUse.add(server);
 		return server;
 	}
@@ -83,7 +77,7 @@ public class ServerManager {
 			serverToRemove = serversInUse.peek();
 			if (serverToRemove.getServerCapacity() >= Constants.SERVER_CONCURRENT_REQUEST_LIMIT) {
 				serverToRemove = serversInUse.pop();
-				serverToRemove.setServerEndTime(SimulationClock.CurrentTime);
+				serverToRemove.setServerEndTime(simulator.getClock().CurrentTime);
 				serversNotInUse.push(serverToRemove);
 			} else
 				break;
@@ -93,10 +87,10 @@ public class ServerManager {
 
 	public void free(Server server, Request request){
 		server.free(request);
-		OutputStatistics.collectStatisticsForDispatched(request);
+		simulator.getRequestStats().collectStatisticsForDispatched(request);
 		Server bestServer = null;
-		while(waitQueue.size()>0 && ( bestServer = serverManager.getBestServer())!=null)
-			bestServer.serve(waitQueue.get());
+		while(simulator.getWaitQueue().size()>0 && ( bestServer = simulator.getServerManager().getBestServer())!=null)
+			bestServer.serve(simulator.getWaitQueue().get());
 	}
 
 	public int busySize(){
@@ -117,7 +111,7 @@ public class ServerManager {
 	}
 
 	public List<String> getServerHistories(){
-		List<Server> servers = ServerManager.getInstance().getAllServers();
+		List<Server> servers = getAllServers();
 		List<String> serverHistories = new ArrayList<String>();
 
 		for(Server server : servers){
