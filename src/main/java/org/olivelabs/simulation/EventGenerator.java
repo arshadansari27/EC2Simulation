@@ -33,12 +33,12 @@ public class EventGenerator {
 
     private BigInteger getNextArrivalTime(){
 
-        BigInteger interArrivalTime = new BigInteger((long)Math.random()*10 +"");
+        BigInteger interArrivalTime = new BigInteger((long)(Math.random()*100) +"");
         return interArrivalTime.add(simulator.getClock().CurrentTime);
     }
 
     private BigInteger getNextServiceTime(){
-    	BigInteger serviceTime = new BigInteger((long)Math.random()*10000 +"");
+    	BigInteger serviceTime = new BigInteger((long)(Math.random()*10000) +"");
 
         return serviceTime;
     }

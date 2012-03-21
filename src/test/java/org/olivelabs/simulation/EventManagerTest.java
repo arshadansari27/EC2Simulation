@@ -28,13 +28,14 @@ public class EventManagerTest {
 		MockEvent mockEvent=null;
 		for(int i = 0; i < 1000; i++){
 			mockEvent = new MockEvent();
-			mockEvent.eventTime = new BigInteger((long)Math.random() * 1000 + "");
+			mockEvent.eventTime = new BigInteger((long)(Math.random() * 1000) + "");
 			eventManager.addEvent(mockEvent);
 		}
 		Event event = null;
-		BigInteger currentTime = BigInteger.ZERO;
+		BigInteger currentTime = new BigInteger("0");
 		while( ( event = eventManager.getNextEvent()) != null){
-			Assert.assertTrue(event.eventTime.compareTo(currentTime) >=0);
+			event.processEvent();
+			Assert.assertTrue(event.eventTime.compareTo((currentTime)) >=0);
 			currentTime = event.eventTime;
 		}
 
@@ -46,7 +47,7 @@ public class EventManagerTest {
 		MockEvent mockEvent=null;
 		for(int i = 1; i <= 1000; i++){
 			mockEvent = new MockEvent();
-			mockEvent.eventTime = new BigInteger((long)Math.random() * 1000+"");
+			mockEvent.eventTime = new BigInteger((long)(Math.random() * 1000)+"");
 			eventManager.addEvent(mockEvent);
 			Assert.assertTrue(eventManager.fel.size()==i);
 		}
@@ -55,7 +56,9 @@ public class EventManagerTest {
 }
 
 class MockEvent extends Event{
+	static BigInteger clock = new BigInteger("1");
 	public void processEvent(){
-		System.out.println("Test Event Occuring at time : "+this.eventTime+"!!!");
+		clock = clock.add(this.eventTime);
+		eventTime = clock;
 	}
 }

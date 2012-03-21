@@ -17,6 +17,7 @@ public class ArrivalEvent extends Event {
 
 	@Override
 	public void processEvent() {
+		System.out.println(simulator.getClock().CurrentTime.compareTo(this.eventTime));
 		simulator.getClock().CurrentTime = this.eventTime;
 		simulator.getServerManager().serve(request);
 		simulator.getEventGenerator().generateNextArrivalEvent();

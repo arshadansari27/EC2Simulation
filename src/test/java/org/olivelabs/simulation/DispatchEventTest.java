@@ -30,8 +30,6 @@ public class DispatchEventTest {
 
 	@Test
 	public void testProcessDispatchEvent() {
-		//EventGenerator.TOTAL_REQUEST = 10;
-
 		simulator.getEventGenerator().generateNextArrivalEvent();
 		Event event = null;
 		while ((event = simulator.getEventManager().getNextEvent()) != null) {
