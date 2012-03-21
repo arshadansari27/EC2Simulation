@@ -9,6 +9,6 @@ public abstract class Event implements Comparable<Event>{
 
 	@Override
 	public int compareTo(Event event) {
-		return this.eventTime.compareTo(eventTime);
+		return this.eventTime.compareTo(event.eventTime);
 	}
 }

@@ -17,7 +17,7 @@ public class ServerManager {
 		serversNotInUse = new Stack<Server>();
 	}
 
-	public void serve(Request request){
+	public synchronized void serve(Request request){
 
 		if(serversInUse.size()<=0 ||
 				(simulator.getWaitQueue().size()>=simulator.params.waitQueueMaxSize &&
@@ -56,7 +56,7 @@ public class ServerManager {
 		 return bestServer;
 	}
 
-	public Server addServer() {
+	public synchronized Server addServer() {
 
 		Server server = null;
 		if((serversInUse.size() + serversNotInUse.size()) >=simulator.params.maxServer)
@@ -70,7 +70,7 @@ public class ServerManager {
 		return server;
 	}
 
-	public Server removeServer() {
+	public synchronized Server removeServer() {
 		// TODO:Improve this code
 		Server serverToRemove = null;
 		while (serversInUse.size() > 1 || (!simulator.RUNNING && serversInUse.size()==1)) {
@@ -85,7 +85,7 @@ public class ServerManager {
 		return serverToRemove;
 	}
 
-	public void free(Server server, Request request){
+	public synchronized void free(Server server, Request request){
 		server.free(request);
 		simulator.getRequestStats().collectStatisticsForDispatched(request);
 		Server bestServer = null;
@@ -94,15 +94,15 @@ public class ServerManager {
 		removeServer();
 	}
 
-	public int busySize(){
+	public synchronized int busySize(){
 		return this.serversInUse.size();
 	}
 
-	public int freeSize(){
+	public synchronized int freeSize(){
 		return this.serversNotInUse.size();
 	}
 
-	public List<Server> getAllServers(){
+	public synchronized List<Server> getAllServers(){
 		List<Server> allServers = new ArrayList<Server>();
 		if(busySize()>0)
 			allServers.addAll(serversInUse);
@@ -111,7 +111,7 @@ public class ServerManager {
 		return allServers;
 	}
 
-	public List<String> getServerHistories(){
+	public synchronized List<String> getServerHistories(){
 
 		List<Server> servers = getAllServers();
 		List<String> serverHistories = new ArrayList<String>();

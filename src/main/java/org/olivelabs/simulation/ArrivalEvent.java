@@ -19,10 +19,9 @@ public class ArrivalEvent extends Event {
 	public void processEvent() {
 		simulator.getEventGenerator().generateNextArrivalEvent();
 
-		if(simulator.getClock().CurrentTime.get().compareTo(this.eventTime) <= 0){
-			simulator.getClock().CurrentTime.set(this.eventTime);
-			simulator.getServerManager().serve(request);
-		}
+		simulator.getClock().CurrentTime.set(this.eventTime);
+		simulator.getServerManager().serve(request);
+
 	}
 
 

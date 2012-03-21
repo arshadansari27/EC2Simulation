@@ -25,7 +25,7 @@ public class OutputStatistics {
 		AVERAGE_SERVICE_TIME = (new BigDecimal(TOTAL_SERVICE_TIME).divide(new BigDecimal( REQUEST_DISPATCHED), RoundingMode.HALF_UP)).doubleValue();
 	}
 	public void collectStatisticsForRejected(Request request){
-			REQUEST_REJECTED.add(BigInteger.ONE);
+		REQUEST_REJECTED = REQUEST_REJECTED.add(BigInteger.ONE);
 	}
 
 	public  StatisticsCollector getStats(){
