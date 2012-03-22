@@ -19,24 +19,24 @@ public class Server {
 		serverHistory = new ArrayList<ServerHistory>();
 	}
 
-	public BigInteger getServerStartTime() {
+	public synchronized  BigInteger getServerStartTime() {
 		return serverStartTime;
 	}
 
-	public void setServerStartTime(BigInteger currentTime) {
+	public synchronized  void setServerStartTime(BigInteger currentTime) {
 		this.serverStartTime = currentTime;
 	}
 
-	public BigInteger getServerEndTime() {
+	public synchronized  BigInteger getServerEndTime() {
 		return serverEndTime;
 	}
 
-	public void setServerEndTime(BigInteger serverEndTime) {
+	public synchronized  void setServerEndTime(BigInteger serverEndTime) {
 		this.serverEndTime = serverEndTime;
 		serverHistory.add(new ServerHistory(this.serverStartTime, this.serverEndTime));
 	}
 
-	public void serve(Request request) {
+	public synchronized void serve(Request request) {
 		if (requestsBeingServed.size() >= numberOfCurrentRequestsLimit)
 			throw new RuntimeException(
 					"Server cannot handle more requests than the limit set, concurrently!!!");
@@ -46,24 +46,23 @@ public class Server {
 		simulator.getEventGenerator().generateDispatchEvent(request, this);
 	}
 
-	public void free(Request request) {
+	public synchronized  void free(Request request) {
 		if (requestsBeingServed.size() <= 0
 				|| !requestsBeingServed.contains(request))
 			throw new RuntimeException("Server does not have the request!!!");
 		request.dispatchTime = simulator.getClock().CurrentTime.get();
 		this.requestsBeingServed.remove(request);
-
 	}
 
-	public int getRequestListSize() {
+	public synchronized  int getRequestListSize() {
 		return requestsBeingServed.size();
 	}
 
-	public int getServerCapacity() {
+	public synchronized  int getServerCapacity() {
 		return numberOfCurrentRequestsLimit - requestsBeingServed.size();
 	}
 
-	public long getRequestServed(){
+	public  synchronized long getRequestServed(){
 		return requestCount;
 	}
 

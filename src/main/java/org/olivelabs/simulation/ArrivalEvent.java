@@ -17,11 +17,9 @@ public class ArrivalEvent extends Event {
 
 	@Override
 	public void processEvent() {
-		simulator.getEventGenerator().generateNextArrivalEvent();
-
 		simulator.getClock().CurrentTime.set(this.eventTime);
 		simulator.getServerManager().serve(request);
-
+		simulator.getEventGenerator().generateNextArrivalEvent();
 	}
 
 

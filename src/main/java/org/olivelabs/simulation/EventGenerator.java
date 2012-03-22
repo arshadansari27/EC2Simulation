@@ -23,12 +23,14 @@ public class EventGenerator {
         request.arrivalTime = getNextArrivalTime();
         request.serviceTime = getNextServiceTime();
         simulator.getEventManager().addEvent(new ArrivalEvent(request.arrivalTime, request, simulator));
+
     }
 
     public synchronized void generateDispatchEvent(Request request, Server server){
 
     	BigInteger dispatchTime = new BigInteger(request.serviceBeginTime.toByteArray()).add(request.serviceTime);
-        simulator.getEventManager().addEvent(new DispatchEvent(dispatchTime, request, server, simulator));
+    	simulator.getEventManager().addEvent(new DispatchEvent(dispatchTime, request, server, simulator));
+
     }
 
     private BigInteger getNextArrivalTime(){
@@ -38,7 +40,7 @@ public class EventGenerator {
     }
 
     private BigInteger getNextServiceTime(){
-    	BigInteger serviceTime = new BigInteger((long)(Math.random()*10000) +"");
+    	BigInteger serviceTime = new BigInteger((long)(Math.random()*1000000) +"");
 
         return serviceTime;
     }

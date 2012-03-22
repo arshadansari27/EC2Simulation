@@ -27,53 +27,62 @@ public class ServerManager implements Runnable{
 	public void run(){
 
 		while(this.simulator.RUNNING){
-
-
-
+			synchronized(this){
 			Iterator<ArrayList<Object>> list_free = toFree.iterator();
 			for(;list_free.hasNext();){
 				ArrayList<Object> dataToFree = list_free.next();
 				Server 	server 	= (Server) 	dataToFree.get(0);
 				Request request = (Request) dataToFree.get(1);
 				server.free(request);
+
 				simulator.getRequestStats().collectStatisticsForDispatched(request);
 				Server bestServer = null;
-				while(simulator.getWaitQueue().size()>0 && ( bestServer = simulator.getServerManager().getBestServer())!=null)
-					bestServer.serve(simulator.getWaitQueue().get());
+				while(simulator.getWaitQueue().size()>0 && ( bestServer = simulator.getServerManager().getBestServer())!=null){
+					request = simulator.getWaitQueue().get();
+					bestServer.serve(request);
+				}
 				removeServer();
 			}
 			toFree.clear();
-
+			}
+			synchronized (this) {
 			Iterator<Request> list_serve = toServe.iterator();
 			for(;list_serve.hasNext();){
+
 				Request request = list_serve.next();
+
 				if(serversInUse.size()<=0 ||
 						(simulator.getWaitQueue().size()>=simulator.params.waitQueueMaxSize &&
-								(serversInUse.size() + serversNotInUse.size()) < simulator.params.maxServer))
+								(serversInUse.size() + serversNotInUse.size()) < simulator.params.maxServer)){
 					addServer().serve(request);
+					continue;
+				}
+
+
 
 				Server server = getBestServer();
 				if((server == null || simulator.getWaitQueue().size()>=1) && simulator.getWaitQueue().size() < simulator.params.waitQueueMaxSize){
 					simulator.getWaitQueue().add(request);
-					return;
+					continue;
 				}
 
 				if(server != null){
 					server.serve(request);
 					while(simulator.getWaitQueue().size()>0 && (server = getBestServer())!=null){
-						server.serve(simulator.getWaitQueue().get());
-
+						request = simulator.getWaitQueue().get();
+						server.serve(request);
 					}
 				}
 				else{
 					simulator.getRequestStats().collectStatisticsForRejected(request);
-
 				}
+
 			}
 			toServe.clear();
+			}
 			try {
 				synchronized(this){
-					wait();
+					wait(50);
 				}
 
 			} catch (InterruptedException e) {}

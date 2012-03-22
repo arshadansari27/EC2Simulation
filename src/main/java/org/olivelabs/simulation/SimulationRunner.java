@@ -6,7 +6,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class SimulationRunner {
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.ReflectionException;
+
+public class SimulationRunner{
 
 	public volatile boolean RUNNING;
 	private EventGenerator eventGenerator;
@@ -101,7 +110,9 @@ public class SimulationRunner {
 			while (!((event = eventManager.getNextEvent()) instanceof TerminalEvent)) {
 				if(event == null){
 					try {
-						TimeUnit.MICROSECONDS.sleep(10);
+						synchronized(eventManager){
+							wait();
+						}
 
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
@@ -114,5 +125,6 @@ public class SimulationRunner {
 
 		}
 	}
+
 
 }

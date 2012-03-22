@@ -22,6 +22,7 @@ public class DispatchEvent extends Event {
 	public void processEvent() {
 		simulator.getClock().CurrentTime.set(this.eventTime);
 		simulator.getServerManager().free(this.server, this.request);
+
 	}
 
 }

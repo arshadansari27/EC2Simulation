@@ -14,6 +14,7 @@ public class EventManager {
 
 	public synchronized void addEvent(Event event){
 		fel.offer(event);
+		notifyAll();
 	}
 
 	public synchronized int getSize(){
