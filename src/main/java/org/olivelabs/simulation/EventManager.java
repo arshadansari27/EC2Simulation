@@ -8,15 +8,15 @@ public class EventManager {
 
 
 
-	public Event getNextEvent(){
+	public synchronized Event getNextEvent(){
 		return fel.poll();
 	}
 
-	public void addEvent(Event event){
+	public synchronized void addEvent(Event event){
 		fel.offer(event);
 	}
 
-	public int getSize(){
+	public synchronized int getSize(){
 		return fel.size();
 	}
 

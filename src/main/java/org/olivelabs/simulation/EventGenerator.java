@@ -12,7 +12,7 @@ public class EventGenerator {
         this.simulator = simulator;
     }
 
-    public void generateNextArrivalEvent(){
+    public synchronized void generateNextArrivalEvent(){
         if(simulator.getClock().CurrentTime.get().compareTo(simulator.params.MAX_CLOCK) >=0){
         	simulator.getEventManager().addEvent(new TerminalEvent(simulator.params.MAX_CLOCK));
             return;
@@ -25,7 +25,7 @@ public class EventGenerator {
         simulator.getEventManager().addEvent(new ArrivalEvent(request.arrivalTime, request, simulator));
     }
 
-    public void generateDispatchEvent(Request request, Server server){
+    public synchronized void generateDispatchEvent(Request request, Server server){
 
     	BigInteger dispatchTime = new BigInteger(request.serviceBeginTime.toByteArray()).add(request.serviceTime);
         simulator.getEventManager().addEvent(new DispatchEvent(dispatchTime, request, server, simulator));
@@ -38,7 +38,7 @@ public class EventGenerator {
     }
 
     private BigInteger getNextServiceTime(){
-    	BigInteger serviceTime = new BigInteger((long)(Math.random()*100) +"");
+    	BigInteger serviceTime = new BigInteger((long)(Math.random()*10000) +"");
 
         return serviceTime;
     }
