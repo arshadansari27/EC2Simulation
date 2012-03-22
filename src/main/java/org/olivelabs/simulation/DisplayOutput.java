@@ -10,10 +10,9 @@ public class DisplayOutput implements Runnable {
 
 	@Override
 	public void run() {
-		int count = 0;
-		while(simulator.RUNNING){
+		while(simulator.RUNNING.get()){
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(500);
 				StatisticsCollector data = simulator.getRequestStats().getStats();
 				System.out.println(data);
 

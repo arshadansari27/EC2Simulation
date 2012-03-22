@@ -26,59 +26,67 @@ public class ServerManager implements Runnable{
 
 	public void run(){
 
-		while(this.simulator.RUNNING){
-			synchronized(this){
-			Iterator<ArrayList<Object>> list_free = toFree.iterator();
-			for(;list_free.hasNext();){
-				ArrayList<Object> dataToFree = list_free.next();
-				Server 	server 	= (Server) 	dataToFree.get(0);
-				Request request = (Request) dataToFree.get(1);
-				server.free(request);
+		while(this.simulator.RUNNING.get() || toFree.size()>0 || toServe.size()>0){
 
-				simulator.getRequestStats().collectStatisticsForDispatched(request);
-				Server bestServer = null;
-				while(simulator.getWaitQueue().size()>0 && ( bestServer = simulator.getServerManager().getBestServer())!=null){
-					request = simulator.getWaitQueue().get();
-					bestServer.serve(request);
+			synchronized(this){
+				Iterator<ArrayList<Object>> list_free = toFree.iterator();
+				for(;list_free.hasNext();){
+					//Logger.log(this.getClass()+": Iterating to free requests", 10000);
+					ArrayList<Object> dataToFree = list_free.next();
+					Server 	server 	= (Server) 	dataToFree.get(0);
+					Request request = (Request) dataToFree.get(1);
+					server.free(request);
+
+					simulator.getRequestStats().collectStatisticsForDispatched(request);
+					Server bestServer = null;
+					while(simulator.getWaitQueue().size()>0 && ( bestServer = simulator.getServerManager().getBestServer())!=null){
+						request = simulator.getWaitQueue().get();
+						bestServer.serve(request);
+					}
+					removeServer();
 				}
-				removeServer();
-			}
-			toFree.clear();
+				toFree.clear();
 			}
 			synchronized (this) {
-			Iterator<Request> list_serve = toServe.iterator();
-			for(;list_serve.hasNext();){
+				Iterator<Request> list_serve = toServe.iterator();
+				for(;list_serve.hasNext();){
 
-				Request request = list_serve.next();
+					Request request = list_serve.next();
+					//Logger.log(this.getClass()+": Iterating to serve requests", 10000);
 
-				if(serversInUse.size()<=0 ||
-						(simulator.getWaitQueue().size()>=simulator.params.waitQueueMaxSize &&
-								(serversInUse.size() + serversNotInUse.size()) < simulator.params.maxServer)){
-					addServer().serve(request);
-					continue;
-				}
-
-
-
-				Server server = getBestServer();
-				if((server == null || simulator.getWaitQueue().size()>=1) && simulator.getWaitQueue().size() < simulator.params.waitQueueMaxSize){
-					simulator.getWaitQueue().add(request);
-					continue;
-				}
-
-				if(server != null){
-					server.serve(request);
-					while(simulator.getWaitQueue().size()>0 && (server = getBestServer())!=null){
-						request = simulator.getWaitQueue().get();
-						server.serve(request);
+					if(serversInUse.size()<=0 ||
+							(simulator.getWaitQueue().size()>=simulator.params.waitQueueMaxSize &&
+									serversInUse.size()  < simulator.params.maxServer)){
+						addServer().serve(request);
+						continue;
 					}
-				}
-				else{
-					simulator.getRequestStats().collectStatisticsForRejected(request);
-				}
 
-			}
-			toServe.clear();
+
+
+					Server server = getBestServer();
+					if((server == null || simulator.getWaitQueue().size()>=1) && simulator.getWaitQueue().size() < simulator.params.waitQueueMaxSize){
+						simulator.getWaitQueue().add(request);
+						continue;
+					}
+
+					if(server != null){
+						server.serve(request);
+						while(simulator.getWaitQueue().size()>0 && (server = getBestServer())!=null){
+							request = simulator.getWaitQueue().get();
+							server.serve(request);
+						}
+					}
+					else{
+
+						String message = "Reject request with WQSize: "+this.simulator.getWaitQueue().size()+", Servers ["
+															+this.serversInUse.size()+"/"+(this.serversInUse.size()+this.serversNotInUse.size() ) ;
+						Logger.log(this.getClass()+": "+message, 10000);
+
+						simulator.getRequestStats().collectStatisticsForRejected(request);
+					}
+
+				}
+				toServe.clear();
 			}
 			try {
 				synchronized(this){
@@ -86,12 +94,18 @@ public class ServerManager implements Runnable{
 				}
 
 			} catch (InterruptedException e) {}
+
+		}
+		this.removeServer();
+		for(String history : getServerHistories()){
+			System.out.println(history);
 		}
 
 
 	}
 
 	public synchronized void free(Server server, Request request){
+		//Logger.log(this.getClass()+": Freeing old Request", 10000);
 		ArrayList<Object> dataToFree = new ArrayList<Object>();
 		dataToFree.add(0,server);
 		dataToFree.add(1,request);
@@ -100,6 +114,7 @@ public class ServerManager implements Runnable{
 	}
 
 	public synchronized void serve(Request request){
+		//Logger.log(this.getClass()+": Adding new Request", 10000);
 		toServe.add(request);
 		notifyAll();
 	}
@@ -119,9 +134,10 @@ public class ServerManager implements Runnable{
 
 	public synchronized Server addServer() {
 
+
+		if(serversInUse.size() >=simulator.params.maxServer)
+			return null;
 		Server server = null;
-		if((serversInUse.size() + serversNotInUse.size()) >=simulator.params.maxServer)
-			return server;
 		if (serversNotInUse.empty())
 			server = new Server(simulator, simulator.params.concurrentRequestLimit);
 		else
@@ -134,9 +150,9 @@ public class ServerManager implements Runnable{
 	public synchronized Server removeServer() {
 		// TODO:Improve this code
 		Server serverToRemove = null;
-		while (serversInUse.size() > 1 || (!simulator.RUNNING && serversInUse.size()==1)) {
+		while (serversInUse.size() > 1 || (!simulator.RUNNING.get() && serversInUse.size()==1)) {
 			serverToRemove = serversInUse.peek();
-			if (serverToRemove.getServerCapacity() >= simulator.params.concurrentRequestLimit || !simulator.RUNNING ) {
+			if (serverToRemove.getServerCapacity() >= simulator.params.concurrentRequestLimit || !simulator.RUNNING.get() ) {
 				serverToRemove = serversInUse.pop();
 				serverToRemove.setServerEndTime(simulator.getClock().CurrentTime.get());
 				serversNotInUse.push(serverToRemove);

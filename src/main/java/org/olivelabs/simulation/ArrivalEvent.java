@@ -19,7 +19,7 @@ public class ArrivalEvent extends Event {
 	public void processEvent() {
 		simulator.getClock().CurrentTime.set(this.eventTime);
 		simulator.getServerManager().serve(request);
-		simulator.getEventGenerator().generateNextArrivalEvent();
+		//simulator.getEventGenerator().generateNextArrivalEvent();
 	}
 
 

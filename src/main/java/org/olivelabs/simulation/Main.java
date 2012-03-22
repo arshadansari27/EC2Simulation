@@ -28,7 +28,7 @@ public class Main {
 		//MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
 		Parameters params = new Parameters();
-		params.MAX_CLOCK = new BigInteger("600000000");
+		params.MAX_CLOCK = new BigInteger("100000000");
 		SimulationRunner simulator = new SimulationRunner(params);
 		simulator.start();
 	}

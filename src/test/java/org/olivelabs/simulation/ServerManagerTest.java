@@ -106,7 +106,8 @@ public class ServerManagerTest {
 
 				}
 
-				simulator.RUNNING = false;
+				simulator.RUNNING.set(false);
+
 			}
 		}
 		exec.execute(simulator.getServerManager());

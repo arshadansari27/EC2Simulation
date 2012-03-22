@@ -21,8 +21,8 @@ public class StatisticsCollector implements Serializable{
     public String toString(){
     	StringBuilder builder = new StringBuilder();
     	//TimeUnit.MILLISECONDS.toMinutes(simulationClock), TimeUnit.MILLISECONDS.toSeconds(simulationClock) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(simulationClock))
-    	//builder.append(String.format("Clock : %10.4f  sec\t",simulationClock.divide(new BigInteger("1000000")).doubleValue()));
-    	builder.append(String.format("Clock : %10d  tus\t",simulationClock));
+    	builder.append(String.format("Clock : %10.4f  sec\t",simulationClock.divide(new BigInteger("1000000")).doubleValue()));
+    	//builder.append(String.format("Clock : %10d  tus\t",simulationClock));
 
     	builder.append(String.format("RequestCount : %10d\t", requestDipatchedCount.add(requestRejectedCount)));
     	builder.append(String.format("Waiting : %10d\t", requestInWaitQueue));
