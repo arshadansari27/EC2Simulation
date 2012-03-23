@@ -4,7 +4,7 @@ package org.olivelabs.simulation;
 public class Parameters {
 	public long waitQueueMaxSize = 20000;
 	public int concurrentRequestLimit = 10000;
-	public int maxServer = 10000;
+	public int maxServer = 1000;
 	public long totalRequest = 1000L;
 	public Long MAX_CLOCK = 3600L;
 	public int eventProcessorSize = 1;

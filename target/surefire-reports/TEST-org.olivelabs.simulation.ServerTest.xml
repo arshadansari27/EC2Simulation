@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.015" errors="0" skipped="0" tests="4" name="org.olivelabs.simulation.ServerTest">
+<testsuite failures="0" time="0.006" errors="0" skipped="0" tests="3" name="org.olivelabs.simulation.ServerTest">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Libraries"/>
@@ -22,7 +22,7 @@
     <property name="basedir" value="/Users/arshadansari/testWorkspace/EC2Simulation"/>
     <property name="java.endorsed.dirs" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/endorsed"/>
     <property name="os.arch" value="x86_64"/>
-    <property name="surefire.real.class.path" value="/Users/arshadansari/testWorkspace/EC2Simulation/target/surefire/surefirebooter6345970218692906412.jar"/>
+    <property name="surefire.real.class.path" value="/Users/arshadansari/testWorkspace/EC2Simulation/target/surefire/surefirebooter3760436704429641082.jar"/>
     <property name="java.io.tmpdir" value="/var/folders/mt/dgm18jl50094dnhyxlqgbrkw0000gn/T/"/>
     <property name="line.separator" value="
 "/>
@@ -46,7 +46,7 @@
     <property name="java.vm.specification.version" value="1.0"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="java.home" value="/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home"/>
-    <property name="sun.java.command" value="/Users/arshadansari/testWorkspace/EC2Simulation/target/surefire/surefirebooter6345970218692906412.jar /Users/arshadansari/testWorkspace/EC2Simulation/target/surefire/surefire3936667496607172262tmp /Users/arshadansari/testWorkspace/EC2Simulation/target/surefire/surefire5285093016827936368tmp"/>
+    <property name="sun.java.command" value="/Users/arshadansari/testWorkspace/EC2Simulation/target/surefire/surefirebooter3760436704429641082.jar /Users/arshadansari/testWorkspace/EC2Simulation/target/surefire/surefire8293985549186477857tmp /Users/arshadansari/testWorkspace/EC2Simulation/target/surefire/surefire5039537238206658547tmp"/>
     <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
     <property name="user.language" value="en"/>
     <property name="awt.toolkit" value="apple.awt.CToolkit"/>
@@ -66,7 +66,6 @@
     <property name="sun.cpu.isalist" value=""/>
   </properties>
   <testcase time="0.001" classname="org.olivelabs.simulation.ServerTest" name="testServe"/>
-  <testcase time="0.008" classname="org.olivelabs.simulation.ServerTest" name="testFree"/>
+  <testcase time="0.001" classname="org.olivelabs.simulation.ServerTest" name="testFree"/>
   <testcase time="0.001" classname="org.olivelabs.simulation.ServerTest" name="testServerCapacity"/>
-  <testcase time="0.001" classname="org.olivelabs.simulation.ServerTest" name="testServerTimeHistory"/>
 </testsuite>
