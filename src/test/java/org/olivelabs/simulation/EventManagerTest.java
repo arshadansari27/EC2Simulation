@@ -1,8 +1,8 @@
 package org.olivelabs.simulation;
 
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import junit.framework.Assert;
 
@@ -26,16 +26,18 @@ public class EventManagerTest {
 	@Test
 	public void testGetNextEvent() {
 		MockEvent mockEvent=null;
+		List<Event> events = new ArrayList<Event>();
 		for(int i = 0; i < 1000; i++){
 			mockEvent = new MockEvent();
-			mockEvent.eventTime = new BigInteger((long)(Math.random() * 1000) + "");
-			eventManager.addEvent(mockEvent);
+			mockEvent.eventTime = (long)i;
+			events.add(mockEvent);
 		}
+		eventManager.addEvents(events);
 		Event event = null;
-		BigInteger currentTime = new BigInteger("0");
+		Long currentTime = 0L;
 		while( ( event = eventManager.getNextEvent()) != null){
 			event.processEvent();
-			Assert.assertTrue(event.eventTime.compareTo((currentTime)) >=0);
+			Assert.assertTrue(event.eventTime > currentTime);
 			currentTime = event.eventTime;
 		}
 
@@ -43,22 +45,24 @@ public class EventManagerTest {
 
 	@Test
 	public void testAddEvent() {
-		eventManager.fel.clear();
+		eventManager.clearFEL();
 		MockEvent mockEvent=null;
+		List<Event> events = new ArrayList<Event>();
 		for(int i = 1; i <= 1000; i++){
 			mockEvent = new MockEvent();
-			mockEvent.eventTime = new BigInteger((long)(Math.random() * 1000)+"");
-			eventManager.addEvent(mockEvent);
-			Assert.assertTrue(eventManager.fel.size()==i);
+			mockEvent.eventTime = (long)(new Random()).nextInt(1000);
+			events.add(mockEvent);
 		}
+		eventManager.addEvents(events);
+		Assert.assertTrue(eventManager.getSize()==1000);
 	}
 
 }
 
 class MockEvent extends Event{
-	static BigInteger clock = new BigInteger("1");
+	static Long clock = 1L;
 	public void processEvent(){
-		clock = clock.add(this.eventTime);
+		clock = clock+this.eventTime;
 		eventTime = clock;
 	}
 }

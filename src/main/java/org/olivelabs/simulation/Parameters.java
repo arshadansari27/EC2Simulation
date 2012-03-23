@@ -1,12 +1,17 @@
 package org.olivelabs.simulation;
 
-import java.math.BigInteger;
 
 public class Parameters {
-	public long waitQueueMaxSize = 200;
-	public int concurrentRequestLimit = 1000;
-	public int maxServer = 5000;
+	public long waitQueueMaxSize = 20000;
+	public int concurrentRequestLimit = 10000;
+	public int maxServer = 10000;
 	public long totalRequest = 1000L;
-	public BigInteger MAX_CLOCK = new BigInteger("100000");
-	public int eventProcessorSize = 3;
+	public Long MAX_CLOCK = 3600L;
+	public int eventProcessorSize = 1;
+	public long averageRequestPerSecond =  2000;
+	public long maxRequestPerSecond = 5000;
+	public long minRequestPerSecond = 8000;
+	public int averageRequestServiceTime = 15;
+	public int maxRequestServiceTime = 30;
+	public int minRequestServiceTime = 3;
 }

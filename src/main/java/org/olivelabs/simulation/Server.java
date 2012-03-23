@@ -1,56 +1,44 @@
 package org.olivelabs.simulation;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Server {
 	List<Request> requestsBeingServed;
 	int numberOfCurrentRequestsLimit;
-	BigInteger serverStartTime;
-	BigInteger serverEndTime;
-	List<ServerHistory> serverHistory;
+	Long serverStartTime;
+	Long serverEndTime;
 	long requestCount = 0;
 	SimulationRunner simulator;
+    private volatile AtomicReference<Long> CurrentTime = new AtomicReference<Long>(-1L);
+
 	public Server(SimulationRunner simulator, int numberOfCurrentRequestsLimit) {
 		this.simulator = simulator;
 		requestsBeingServed = new ArrayList<Request>();
 		this.numberOfCurrentRequestsLimit = numberOfCurrentRequestsLimit;
-		serverHistory = new ArrayList<ServerHistory>();
 	}
 
-	public synchronized  BigInteger getServerStartTime() {
-		return serverStartTime;
-	}
 
-	public synchronized  void setServerStartTime(BigInteger currentTime) {
-		this.serverStartTime = currentTime;
-	}
-
-	public synchronized  BigInteger getServerEndTime() {
-		return serverEndTime;
-	}
-
-	public synchronized  void setServerEndTime(BigInteger serverEndTime) {
-		this.serverEndTime = serverEndTime;
-		serverHistory.add(new ServerHistory(this.serverStartTime, this.serverEndTime));
-	}
 
 	public synchronized void serve(Request request) {
+
+		CurrentTime.set(request.arrivalTime);
 		if (requestsBeingServed.size() >= numberOfCurrentRequestsLimit)
-			throw new RuntimeException(
-					"Server cannot handle more requests than the limit set, concurrently!!!");
-		request.serviceBeginTime = simulator.getClock().CurrentTime.get();
+			return;
+		request.serviceBeginTime = CurrentTime.get();
 		this.requestsBeingServed.add(request);
 		requestCount++;
+		Logger.log(this.getClass(), ":Serving Request", 10000);
 		simulator.getEventGenerator().generateDispatchEvent(request, this);
 	}
 
 	public synchronized  void free(Request request) {
 		if (requestsBeingServed.size() <= 0
 				|| !requestsBeingServed.contains(request))
-			throw new RuntimeException("Server does not have the request!!!");
-		request.dispatchTime = simulator.getClock().CurrentTime.get();
+			return;
+		CurrentTime.set(request.dispatchTime);
+		Logger.log(this.getClass(), ":Freeing Request", 10000);
 		this.requestsBeingServed.remove(request);
 	}
 
@@ -66,11 +54,4 @@ public class Server {
 		return requestCount;
 	}
 
-}
-class ServerHistory{
-	public BigInteger startTime, endTime;
-	public ServerHistory(BigInteger startTime, BigInteger endTime){
-		this.startTime = startTime;
-		this.endTime = endTime;
-	}
 }

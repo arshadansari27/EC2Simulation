@@ -1,8 +1,5 @@
 package org.olivelabs.simulation;
 
-import static org.junit.Assert.*;
-
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,19 +17,22 @@ public class EventGeneratorTest {
 	@Before
 	public void setUp() throws Exception {
 		simulator = new SimulationRunner(new Parameters());
-		simulator.getEventManager().fel.clear();
+		simulator.getEventManager().clearFEL();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		simulator.getEventManager().fel.clear();
+		simulator.getEventManager().clearFEL();
 	}
 
 
 	@Test
 	public void testGenerateNextArrivalEvent() {
-		for(int i = 0; i<10;i++)
-			simulator.getEventGenerator().generateNextArrivalEvent();
+		simulator.params.MAX_CLOCK = 100L;
+		simulator.params.averageRequestPerSecond = 10L;
+		simulator.params.minRequestPerSecond= 10L;
+		simulator.params.maxRequestPerSecond = 10L;
+		simulator.getEventGenerator().generateArrivalEventsInBatch(0);
 		Event event  = null;
 		while((event = simulator.getEventManager().getNextEvent())!=null){
 			Assert.assertTrue(event instanceof ArrivalEvent);
@@ -49,9 +49,9 @@ public class EventGeneratorTest {
 		for(int i = 0; i < 10; i++){
 			Request request = new Request();
 			request.id = i;
-			request.arrivalTime = BigInteger.ONE;
-			request.serviceTime = BigInteger.ONE;
-			request.serviceBeginTime = BigInteger.ONE;
+			request.arrivalTime = 1L;
+			request.serviceTime = 1L;
+			request.serviceBeginTime = 1L;
 			requestList.add(request);
 		}
 

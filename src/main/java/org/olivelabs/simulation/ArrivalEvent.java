@@ -1,6 +1,5 @@
 package org.olivelabs.simulation;
 
-import java.math.BigInteger;
 
 public class ArrivalEvent extends Event {
 
@@ -8,7 +7,7 @@ public class ArrivalEvent extends Event {
 	SimulationRunner simulator;
 
 
-	public ArrivalEvent(BigInteger eventTime, Request request, SimulationRunner simulator){
+	public ArrivalEvent(Long eventTime, Request request, SimulationRunner simulator){
 		super();
 		this.eventTime = eventTime;
 		this.request = request;
@@ -17,9 +16,9 @@ public class ArrivalEvent extends Event {
 
 	@Override
 	public void processEvent() {
-		simulator.getClock().CurrentTime.set(this.eventTime);
+		//simulator.getClock().CurrentTime.set(this.eventTime);
 		simulator.getServerManager().serve(request);
-		//simulator.getEventGenerator().generateNextArrivalEvent();
+		Logger.log(this.getClass(),":Processing Arrival Request with arrival time : "+this.eventTime, 10000);
 	}
 
 

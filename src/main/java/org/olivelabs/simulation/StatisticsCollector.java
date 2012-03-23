@@ -1,7 +1,6 @@
 package org.olivelabs.simulation;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
 public class StatisticsCollector implements Serializable{
@@ -9,9 +8,9 @@ public class StatisticsCollector implements Serializable{
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	public BigInteger simulationClock;
-    public BigInteger requestDipatchedCount;
-    public BigInteger requestRejectedCount;
+	public Long simulationClock;
+    public Long requestDipatchedCount;
+    public Long requestRejectedCount;
     public long serversInUse;
     public long requestInWaitQueue;
 
@@ -20,16 +19,15 @@ public class StatisticsCollector implements Serializable{
 
     public String toString(){
     	StringBuilder builder = new StringBuilder();
-    	//TimeUnit.MILLISECONDS.toMinutes(simulationClock), TimeUnit.MILLISECONDS.toSeconds(simulationClock) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(simulationClock))
-    	builder.append(String.format("Clock : %10.4f  sec\t",simulationClock.divide(new BigInteger("1000000")).doubleValue()));
-    	//builder.append(String.format("Clock : %10d  tus\t",simulationClock));
 
-    	builder.append(String.format("RequestCount : %10d\t", requestDipatchedCount.add(requestRejectedCount)));
-    	builder.append(String.format("Waiting : %10d\t", requestInWaitQueue));
-    	builder.append(String.format("Servers : %10d\t", serversInUse));
-    	builder.append(String.format("Avg Service : %10.4f\t", averageServiceTime));
-    	builder.append(String.format("Avg Wait : %10.4f\t", averageWaitTime));
-    	builder.append(String.format("Rejected : %10d\t", requestRejectedCount));
+
+    	builder.append(String.format("Clock : %d min %d sec [%d]\t",TimeUnit.SECONDS.toMinutes(simulationClock.longValue()),TimeUnit.SECONDS.toSeconds(simulationClock.longValue()) - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(simulationClock.longValue())),simulationClock.longValue()));
+    	builder.append(String.format("RequestCount : %d\t", requestDipatchedCount+requestRejectedCount));
+    	builder.append(String.format("Waiting : %d\t", requestInWaitQueue));
+    	builder.append(String.format("Servers : %d\t", serversInUse));
+    	builder.append(String.format("Avg Service : %f\t", averageServiceTime));
+    	builder.append(String.format("Avg Wait : %f\t", averageWaitTime));
+    	builder.append(String.format("Rejected : %d\t", requestRejectedCount));
 
     	return builder.toString();
     }

@@ -1,9 +1,8 @@
 package org.olivelabs.simulation;
 
-import java.math.BigInteger;
 
 public abstract class Event implements Comparable<Event>{
-	public BigInteger eventTime;
+	public Long eventTime;
 	public abstract void processEvent();
 
 

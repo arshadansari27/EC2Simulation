@@ -1,6 +1,5 @@
 package org.olivelabs.simulation;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
@@ -59,9 +58,9 @@ public class ServerManagerTest {
 				for(int i = 0; i < simulator.params.concurrentRequestLimit+1; i++){
 					Request request = new Request();
 					request.id = i;
-					request.arrivalTime = new BigInteger(""+(i*2));
-					request.serviceTime = new BigInteger(""+(i*2+1));
-					request.serviceBeginTime = new BigInteger(""+(long)(Math.random()*100000));
+					request.arrivalTime = i*2L;
+					request.serviceTime = i*2L+1;
+					request.serviceBeginTime = (long)(Math.random()*100000);
 					requests.add(request);
 				}
 				//OutputStatistics stats = new OutputStatistics(simulator);
@@ -110,7 +109,7 @@ public class ServerManagerTest {
 
 			}
 		}
-		exec.execute(simulator.getServerManager());
+		exec.execute(simulator.getServerManager().getRunnableProcess());
 		exec.execute(new RequestServer());
 		exec.awaitTermination(5, TimeUnit.SECONDS);
 

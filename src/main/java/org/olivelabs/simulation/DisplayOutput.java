@@ -12,7 +12,7 @@ public class DisplayOutput implements Runnable {
 	public void run() {
 		while(simulator.RUNNING.get()){
 			try {
-				Thread.sleep(500);
+				Thread.sleep(1500);
 				StatisticsCollector data = simulator.getRequestStats().getStats();
 				System.out.println(data);
 

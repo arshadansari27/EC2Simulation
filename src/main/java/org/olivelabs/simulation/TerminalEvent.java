@@ -1,10 +1,9 @@
 package org.olivelabs.simulation;
 
-import java.math.BigInteger;
 
 public class TerminalEvent extends Event {
 
-	public TerminalEvent(BigInteger eventTime){
+	public TerminalEvent(Long eventTime){
 		this.eventTime = eventTime;
 	}
 

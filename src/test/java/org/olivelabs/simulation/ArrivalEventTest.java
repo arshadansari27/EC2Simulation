@@ -1,11 +1,7 @@
 package org.olivelabs.simulation;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Before;
@@ -19,18 +15,18 @@ public class ArrivalEventTest {
 	@Before
 	public void setUp() throws Exception {
 		simulator = new SimulationRunner(new Parameters());
-		simulator.getEventManager().fel.clear();
+		simulator.getEventManager().clearFEL();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		simulator.getEventManager().fel.clear();
+		simulator.getEventManager().clearFEL();
 	}
 
 	@Test
 	public void testProcessArrivalEvent() {
-		//EventGenerator.TOTAL_REQUEST = 10;
-		simulator.getEventGenerator().generateNextArrivalEvent();
+		simulator.params.MAX_CLOCK = 100L;
+		simulator.getEventGenerator().generateArrivalEventsInBatch(0);
 		Event event = null;
 		while ((event = simulator.getEventManager().getNextEvent()) != null) {
 			if (event instanceof ArrivalEvent) {

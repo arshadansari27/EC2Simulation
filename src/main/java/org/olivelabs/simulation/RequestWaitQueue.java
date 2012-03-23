@@ -12,16 +12,21 @@ public class RequestWaitQueue {
 
 
 
-	public void add(Request request){
-
+	public synchronized void add(Request request){
+		if(request==null){
+			throw new RuntimeException("You messed with the null request!!");
+		}
 		queue.add(request);
 	}
 
-	public Request get(){
+	public synchronized Request get(){
+		if(queue.isEmpty()){
+			return null;
+		}
 		return queue.remove(0);
 	}
 
-	public int size(){
+	public synchronized int size(){
 		return queue.size();
 	}
 }
