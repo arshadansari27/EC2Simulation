@@ -87,7 +87,7 @@ public class EventGenerator implements Runnable{
 			if(eventManager.getSize() > (2*params.maxRequestPerSecond)){
 				synchronized(this){
 					try {
-						wait(100);
+						wait(10);
 					} catch (InterruptedException e) {}
 				}
 				continue;

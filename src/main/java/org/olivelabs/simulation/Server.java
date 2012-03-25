@@ -33,7 +33,7 @@ public class Server {
         this.numberOfConcurrentRequestsLimit = numberOfConcurrentRequestsLimit;
         dispatchQueue = new PriorityQueue<Long>();
         stats = new OutputStatistics();
-        log.debug( this.id+"Server Created");
+        //log.debug( this.id+"Server Created");
     }
 
     public void setBusy(long currentTime){
@@ -107,19 +107,19 @@ public class Server {
 
     public void dispatchAll(){
     	while(dispatchQueue.size()>0){
-    		log.debug("Still many remains to be dispatched");
+    		//log.debug("Still many remains to be dispatched");
     		this.currentTime = dispatchQueue.poll();
     	}
     }
     public void reject(Request request){
-        log.debug(this.getId()+":Rejecting  concurrentRequests [ "+currentRequestCount+" / "+numberOfConcurrentRequestsLimit+" ]  at time : "+this.currentTime);
+        //log.debug(this.getId()+":Rejecting  concurrentRequests [ "+currentRequestCount+" / "+numberOfConcurrentRequestsLimit+" ]  at time : "+this.currentTime);
         rejectedRequestCount++;
         stats.collectStatisticsForRejected(request);
     }
 
     public boolean canHandle(){
-        if(!(numberOfConcurrentRequestsLimit > currentRequestCount))
-            log.debug("Server :"+getId()+", cannot handle any more request; as of now!");
+        //if(!(numberOfConcurrentRequestsLimit > currentRequestCount))
+        //    log.debug("Server :"+getId()+", cannot handle any more request; as of now!");
         return numberOfConcurrentRequestsLimit > currentRequestCount;
     }
 

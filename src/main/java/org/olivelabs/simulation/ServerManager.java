@@ -94,17 +94,7 @@ public class ServerManager implements Runnable {
 
 	public void run() {
 		while (running || waitQueue.size() > 0) {
-			log.debug("Running server Manager");
-
-			if (waitQueue.size() == 0) {
-				log.debug("Nothing in wait queue yet! yawning...");
-				synchronized (waitQueue) {
-					try {
-						TimeUnit.MICROSECONDS.sleep(200);
-					} catch (InterruptedException e) {
-					}
-				}
-			}
+			//log.debug("Running server Manager");
 			for (Server server : serversInUse) {
 				server.dispatch(currentTime);
 			}
@@ -125,7 +115,7 @@ public class ServerManager implements Runnable {
 						passRequestToNextServerManager(request);
 						continue;
 					} else {
-						log.debug("Getting random server to have the request rejected.. or so i think :)");
+						//log.debug("Getting random server to have the request rejected.. or so i think :)");
 						currentBestServer = getRandomServer();
 					}
 				}
@@ -133,7 +123,7 @@ public class ServerManager implements Runnable {
 			}
 			try {
 				synchronized (this) {
-					wait(100);
+					wait(10);
 				}
 
 			} catch (InterruptedException e) {

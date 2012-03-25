@@ -51,11 +51,13 @@ public class SimulationRunner{
 
         executor.execute(this.eventGenerator);
         executor.execute(this.serverManager);
-        executor.execute(new SimulationProcess(0));
+        for(int i = 0; i < params.eventProcessorSize; i++){
+        	executor.execute(new SimulationProcess(i));
+        }
 
 
         while(serverManager.isRunning()){
-        	log.info(String.format("Completed : %3.2f ", (double)this.serverManager.getSimulationTime()/this.params.MAX_CLOCK * 100));
+        	log.info(String.format("Completed : %3.2f percent done ", (double)this.serverManager.getSimulationTime()/this.params.MAX_CLOCK * 100));
             executor.awaitTermination(7, TimeUnit.SECONDS);
         }
         executor.shutdownNow();
@@ -84,7 +86,7 @@ public class SimulationRunner{
             		 log.debug("Event didn't arrive yet!, so getting bored!");
                      try {
                          synchronized(this){
-                             wait(100);
+                             wait(10);
                          }
                      } catch (InterruptedException e) {}
                      continue;

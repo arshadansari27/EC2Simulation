@@ -15,11 +15,11 @@ public class Main {
 		Parameters params = new Parameters();
 
 		long time = System.currentTimeMillis();
-		params.MAX_CLOCK = 3600*1L;
+		params.MAX_CLOCK = 24 * 3600*1L;
 		SimulationRunner simulator = new SimulationRunner(params);
 		simulator.start();
 		time= System.currentTimeMillis() - time;
-		log.info(String.format("Simulation time : %d min %d sec [%d]\t",TimeUnit.SECONDS.toMinutes(time),TimeUnit.SECONDS.toSeconds(time) - TimeUnit.MINUTES.toSeconds(TimeUnit.SECONDS.toMinutes(time)),time));
+		log.info(String.format("Simulation time : %d sec [%d]\t",TimeUnit.SECONDS.convert(time,TimeUnit.MILLISECONDS),time));
 
 	}
 
