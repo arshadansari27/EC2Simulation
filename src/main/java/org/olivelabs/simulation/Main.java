@@ -18,6 +18,7 @@ public class Main {
 		params.MAX_CLOCK = 24 * 3600*1L;
 		SimulationRunner simulator = new SimulationRunner(params);
 		simulator.start();
+		simulator.getStatistics();
 		time= System.currentTimeMillis() - time;
 		log.info(String.format("Simulation time : %d sec [%d]\t",TimeUnit.SECONDS.convert(time,TimeUnit.MILLISECONDS),time));
 

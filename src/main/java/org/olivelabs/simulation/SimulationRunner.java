@@ -61,15 +61,19 @@ public class SimulationRunner{
             executor.awaitTermination(7, TimeUnit.SECONDS);
         }
         executor.shutdownNow();
-        List<Server> servers = serverManager.getAllServers();
-        StatisticsCollector statsData = new StatisticsCollector(servers);
-        log.info(statsData);
-        log.debug(statsData);
         log.info("Simulation End Time : " + new Date());
 
 
     }
 
+    public StatisticsCollector getStatistics(){
+        List<Server> servers = serverManager.getAllServers();
+        StatisticsCollector statsData = new StatisticsCollector(serverManager, servers);
+        log.info(statsData);
+        log.debug(statsData);
+        return statsData;
+
+    }
     class SimulationProcess implements Runnable{
         int id;
         SimulationProcess(int id){

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Stack;
+import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -29,6 +31,7 @@ public class ServerManager implements Runnable {
 	private long stopTime;
 	static Logger log = Logger.getLogger(ServerManager.class.getName());
 	Random random = new Random();
+	private ServerHistoryInfo serverHistory;
 
 	public ServerManager(ExecutorService executor, Parameters params,
 			int depthNextServerManager) {
@@ -41,6 +44,7 @@ public class ServerManager implements Runnable {
 		this.params = params;
 		this.executor = executor;
 		this.depthNextServerManager = depthNextServerManager;
+		this.serverHistory = new ServerHistoryInfo();
 	}
 
 	private void getBestServer(long currentTime) {
@@ -158,6 +162,7 @@ public class ServerManager implements Runnable {
 			server = serversNotInUse.pop();
 		serversInUse.add(server);
 		server.setBusy(this.currentTime);
+		this.serverHistory.updateServerGraph(this.currentTime, serversInUse.size());
 		log.debug(this.id + ":Adding server" + server.getId());
 		return server;
 	}
@@ -178,6 +183,7 @@ public class ServerManager implements Runnable {
 			} else
 				break;
 		}
+		this.serverHistory.updateServerGraph(this.currentTime, serversInUse.size());
 		return serverToRemove;
 	}
 
@@ -211,4 +217,35 @@ public class ServerManager implements Runnable {
 
 	}
 
+	public ServerHistoryInfo getServerHistory(){
+		if(nextServerManager != null){
+		ServerHistoryInfo history = nextServerManager.getServerHistory();
+		this.serverHistory.merge(history);
+		}
+		return this.serverHistory;
+	}
+
+}
+
+class ServerHistoryInfo{
+	public TreeMap<Long, Long> serverGraph = new TreeMap<Long, Long>();
+	public void updateServerGraph(long eventTime, long serverCount){
+		if(!serverGraph.containsKey(eventTime) || serverCount > serverGraph.get(eventTime)){
+			serverGraph.put(eventTime, serverCount);
+		}
+	}
+	public void merge(ServerHistoryInfo history) {
+		Long eventTime, serverCount;
+		for(Entry<Long, Long> serverHistory : history.serverGraph.entrySet()){
+			eventTime = serverHistory.getKey();
+			serverCount = serverHistory.getValue();
+			if(serverGraph.containsKey(eventTime)){
+				serverGraph.put(eventTime, serverGraph.get(eventTime) + serverCount);
+			}
+			else{
+				serverGraph.put(eventTime, serverCount);
+			}
+		}
+
+	}
 }
