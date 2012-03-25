@@ -5,120 +5,104 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.log4j.Logger;
 
 public class SimulationRunner{
 
-	public volatile AtomicBoolean RUNNING = new AtomicBoolean();
-	private EventGenerator eventGenerator;
-	private ServerManager serverManager;
-	private EventManager eventManager;
-	private SimulationClock clock;
-	private RequestWaitQueue waitQueue;
-	private OutputStatistics requestStats;
-	public Parameters params;
+    private EventGenerator eventGenerator;
+    private ServerManager serverManager;
+    private EventManager eventManager;
+    private OutputStatistics requestStats;
+    public Parameters params;
+    private ExecutorService executor;
+
+    static Logger log = Logger.getLogger(SimulationRunner.class.getName());
 
 
+    public SimulationRunner(Parameters params){
+        //executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()+1);
+        executor = Executors.newCachedThreadPool();
+        this.eventManager = new EventManager();
+        this.params = params;
+        this.serverManager = new ServerManager(executor, params,params.serverManager);
+        this.eventGenerator = new EventGenerator(this.eventManager, params);
+    }
+
+    public OutputStatistics getRequestStats(){
+        return this.requestStats;
+    }
 
 
+    public EventManager getEventManager(){
+        return this.eventManager;
+    }
 
-	public SimulationRunner(Parameters params){
-		this.clock = new SimulationClock();
-		this.waitQueue = new RequestWaitQueue();
-		this.eventManager = new EventManager();
-		this.serverManager = new ServerManager(this);
-		this.eventGenerator = new EventGenerator(this);
-		this.params = params;
-		this.eventGenerator.totalRequest = params.totalRequest;
-		this.requestStats = new OutputStatistics(this);
-		RUNNING.set(true);
-	}
+    public EventGenerator getEventGenerator(){
+        return this.eventGenerator;
+    }
 
-	public OutputStatistics getRequestStats(){
-		return this.requestStats;
-	}
+    public ServerManager getServerManager(){
+        return this.serverManager;
+    }
 
-	public RequestWaitQueue getWaitQueue(){
-		return this.waitQueue;
-	}
+    public void start() throws InterruptedException{
+        log.info("Simulation Begin Time : " + new Date());
 
-	public SimulationClock getClock(){
-		return this.clock;
-	}
-
-	public EventManager getEventManager(){
-		return this.eventManager;
-	}
-
-	public EventGenerator getEventGenerator(){
-		return this.eventGenerator;
-	}
-
-	public ServerManager getServerManager(){
-		return this.serverManager;
-	}
-
-	public void start() throws InterruptedException{
-		System.out.println("Simulation Begin Time : " + new Date());
-		System.out.print("[");
-
-		//ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()+1);
-		//ExecutorService executor = Executors.newFixedThreadPool(this.params.eventProcessorSize+3);
-		ExecutorService executor = Executors.newCachedThreadPool();
-
-		executor.execute(new DisplayOutput(this));
-		executor.execute(this.eventGenerator);
-		executor.execute(this.serverManager.getRunnableProcess());
-		for(int i = 0;i < this.params.eventProcessorSize; i++){
-
-			executor.execute(new SimulationProcess(i));
-		}
-		executor.shutdown();
-
-		while(RUNNING.get()){
-			executor.awaitTermination(10, TimeUnit.SECONDS);
-		}
-		System.out.println("]");
-		System.out.println("Simulation End Time : " + new Date());
+        executor.execute(this.eventGenerator);
+        executor.execute(this.serverManager);
+        executor.execute(new SimulationProcess(0));
 
 
-	}
+        while(serverManager.isRunning()){
+        	log.info(String.format("Completed : %3.2f ", (double)this.serverManager.getSimulationTime()/this.params.MAX_CLOCK * 100));
+            executor.awaitTermination(7, TimeUnit.SECONDS);
+        }
+        executor.shutdownNow();
+        List<Server> servers = serverManager.getAllServers();
+        StatisticsCollector statsData = new StatisticsCollector(servers);
+        log.info(statsData);
+        log.debug(statsData);
+        log.info("Simulation End Time : " + new Date());
 
-	public double percentComplete(){
-		return (eventGenerator.requestCount*1.0/eventGenerator.totalRequest) * 100;
-	}
 
+    }
 
+    class SimulationProcess implements Runnable{
+        int id;
+        SimulationProcess(int id){
+            this.id = id;
+        }
+        @Override
+        public void run() {
+            Event event = null;
+            log.debug("Starting the listening of event that are put on event manager");
+            while(true){
+            	//log.debug("Getting next event");
+            	event = eventManager.getNextEvent();
+            	 if(event == null){
+            		 log.debug("Event didn't arrive yet!, so getting bored!");
+                     try {
+                         synchronized(this){
+                             wait(100);
+                         }
+                     } catch (InterruptedException e) {}
+                     continue;
+                 }
+            	//log.debug("Event Arrived with type:"+event.getClass()+" at ["+event.eventTime+"]");
+            	if(event instanceof TerminalEvent){
+            		serverManager.stop(event.eventTime);
+            		break;
+            	}
 
-	class SimulationProcess implements Runnable{
-		int id;
-		SimulationProcess(int id){
-			this.id = id;
-		}
-		@Override
-		public void run() {
-			Event event = null;
-			long clock = 0;
-			while (!((event = eventManager.getNextEvent()) instanceof TerminalEvent)
-					&& RUNNING.get()) {
-				if(event == null){
-					try {
-						synchronized(this){
-							wait(50);
-						}
+                process(event.request);
+            }
+        }
 
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					continue;
-				}
-				clock = event.eventTime;
-				event.processEvent();
-			}
-			RUNNING.set(false);
-		}
-	}
+        void process(Request request){
+            serverManager.serve(request);
+        }
+    }
 
 
 

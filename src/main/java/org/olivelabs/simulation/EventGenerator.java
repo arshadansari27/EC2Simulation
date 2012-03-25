@@ -5,22 +5,25 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.log4j.Logger;
+
 public class EventGenerator implements Runnable{
 
-    public long totalRequest = 10000L;
-    public long requestCount = 0;
-    private SimulationRunner simulator;
+	private Parameters params;
+	private long requestCount = 0;
     Random rand = new Random();
-    AtomicBoolean stopGenerating = new AtomicBoolean();
+    //AtomicBoolean stopGenerating = new AtomicBoolean();
     String requestUrl = "/testURL/SameForAll";
-    public EventGenerator(SimulationRunner simulator){
-        this.simulator = simulator;
-    	stopGenerating.set(false);
-
+    static Logger log = Logger.getLogger(EventGenerator.class.getName());
+    private EventManager eventManager;
+    public EventGenerator(EventManager eventManager, Parameters params){
+        //stopGenerating.set(false);
+        this.params = params;
+        this.eventManager = eventManager;
     }
 
     public synchronized void generateArrivalEventsInBatch(long currentTime){
-    	if(currentTime >= simulator.params.MAX_CLOCK){
+    	if(currentTime >= params.MAX_CLOCK){
         	generateTerminalEvent();
             return;
         }
@@ -28,32 +31,26 @@ public class EventGenerator implements Runnable{
     	long requestSize = 0L;
     	switch(rand.nextInt(3)){
     	case 0:
-    		requestSize = this.simulator.params.averageRequestPerSecond;
+    		requestSize = this.params.averageRequestPerSecond;
     		break;
     	case 1:
-    		requestSize = this.simulator.params.maxRequestPerSecond;
+    		requestSize = this.params.maxRequestPerSecond;
     		break;
     	case 2:
-    		requestSize = this.simulator.params.minRequestPerSecond;
+    		requestSize = this.params.minRequestPerSecond;
     		break;
     	}
     	for(long i = 0; i < requestSize; i++)
-    		events.add(new ArrivalEvent(currentTime, getNextRequest(currentTime), this.simulator));
+    		events.add(new Event(currentTime, getNextRequest(currentTime)));
 
-		Logger.log(this.getClass(), ":Generating Arrival Request["+requestSize+"] at ["+currentTime+"]", 10);
-        simulator.getEventManager().addEvents(events);
-    }
-    public synchronized void generateDispatchEvent(Request request, Server server){
-
-    	request.dispatchTime = request.serviceBeginTime + request.serviceTime;
-    	simulator.getEventManager().addSingleEvent(new DispatchEvent(request.dispatchTime, request, server, simulator));
-    	Logger.log(this.getClass(), ":Generating dispatch Request", 10000);
+		log.debug( ":Generating Arrival Request["+requestSize+"] at ["+currentTime+"]");
+		eventManager.addEvents(events);
     }
 
     private void generateTerminalEvent(){
-    	simulator.getEventManager().addSingleEvent(new TerminalEvent(simulator.params.MAX_CLOCK));
-    	stopGenerating.set(true);
-    	Logger.log(this.getClass(), ":Generating Terminal Request", 10000);
+    	eventManager.addSingleEvent(new TerminalEvent(params.MAX_CLOCK,null));
+    	//stopGenerating.set(true);
+    	log.debug("Generating Terminal Request");
     }
     private Request getNextRequest(Long currentTime){
     	Request request = new Request();
@@ -69,13 +66,13 @@ public class EventGenerator implements Runnable{
     	long requestServiceTime = 0L;
     	switch(rand.nextInt(3)){
     	case 0:
-    		requestServiceTime = this.simulator.params.averageRequestServiceTime;
+    		requestServiceTime = this.params.averageRequestServiceTime;
     		break;
     	case 1:
-    		requestServiceTime = this.simulator.params.maxRequestServiceTime;
+    		requestServiceTime = this.params.maxRequestServiceTime;
     		break;
     	case 2:
-    		requestServiceTime = this.simulator.params.minRequestServiceTime;
+    		requestServiceTime = this.params.minRequestServiceTime;
     		break;
     	}
     	return requestServiceTime;
@@ -85,9 +82,9 @@ public class EventGenerator implements Runnable{
 	public void run() {
 
 		long currentTime = 0;
-		while(currentTime <= simulator.params.MAX_CLOCK){
+		while(currentTime <= params.MAX_CLOCK){
 
-			if(simulator.getEventManager().getCurrentArrivalCount() > (2*simulator.params.maxRequestPerSecond)){
+			if(eventManager.getSize() > (2*params.maxRequestPerSecond)){
 				synchronized(this){
 					try {
 						wait(100);
@@ -96,10 +93,10 @@ public class EventGenerator implements Runnable{
 				continue;
 			}
 			generateArrivalEventsInBatch(currentTime);
-			simulator.getEventManager().setGenerationClock(currentTime);
 
 			currentTime++;
 		}
+		generateTerminalEvent();
 
 	}
 }

@@ -1,7 +1,7 @@
 package org.olivelabs.simulation;
 
 
-public final class Request {
+public class Request implements Comparable<Request>{
 	public String url;
 	public long id;
 	public Long arrivalTime;
@@ -10,5 +10,12 @@ public final class Request {
 	public Long dispatchTime;
 	public Long waitTime(){
 		return serviceBeginTime - arrivalTime;
+	}
+
+	@Override
+	public int compareTo(Request request) {
+		if(this.arrivalTime < request.arrivalTime) return -1;
+		else if(this.arrivalTime > request.arrivalTime) return 1;
+		else return 0;
 	}
 }

@@ -1,10 +1,20 @@
 package org.olivelabs.simulation;
 
+import org.apache.log4j.Logger;
 
-public abstract class Event implements Comparable<Event>{
+
+public class Event implements Comparable<Event>{
 	public Long eventTime;
-	public abstract void processEvent();
+	public Request request;
 
+	static Logger log = Logger.getLogger(Event.class.getName());
+
+
+	public Event(Long eventTime, Request request){
+		super();
+		this.eventTime = eventTime;
+		this.request = request;
+	}
 
 	@Override
 	public int compareTo(Event event) {

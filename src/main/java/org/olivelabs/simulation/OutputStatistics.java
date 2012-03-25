@@ -1,52 +1,56 @@
 package org.olivelabs.simulation;
 
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.TreeMap;
 
 
 public class OutputStatistics {
-	public volatile long requestDispatched = 0L;
-	public volatile long requestRejected = 0L;
-	public volatile long totalServiceTime = 0L;
-	public volatile long totalWaitTime = 0L;
-	public volatile double averageWaitTime = 0D;
-	public volatile double AverageServiceTime = 0D;
-	public volatile long simulationClock = 0L;
-	SimulationRunner simulator;
-	public volatile Map<Long, Integer> serverStats = new TreeMap<Long, Integer>();
 
-	public OutputStatistics(SimulationRunner simulator){
-		this.simulator = simulator;
+	//Request Stats
+	public long requestDispatched = 0L;
+	public long requestRejected = 0L;
+	public long totalServiceTime = 0L;
+	public long totalActualServiceTime = 0L;
+	public long totalWaitTime = 0L;
+	public double averageWaitTime = 0D;
+	public double averageServiceTime = 0D;
+	public double averageActualServiceTime = 0D;
+	public long simulationClock = 0L;
+
+	//ServerStats
+	public String id;
+	public double averageServerUtilization;
+    public long totalTimeInAction, totalTimeInSystem;
+    public int serverMangerId;
+
+	public OutputStatistics(){
+
 	}
 
-	public void collectStatisticsForServerHistory(long clock, int serverCount){
-		this.simulationClock = clock;
-		serverStats.put(clock, serverCount);
+	public void collectStatisticsForServer(Server server){
+		id = server.getId();
+		averageServerUtilization = server.getAverageUtilization();
+		totalTimeInAction = server.getBusyTime();
+		totalTimeInSystem = server.getTotalTimeInSystem();
 	}
+
 	public void collectStatisticsForDispatched(Request request){
 		requestDispatched += 1;
 		totalServiceTime += request.serviceTime;
 		totalWaitTime += request.waitTime();
+		totalActualServiceTime = request.serviceTime + request.waitTime();
 
-		averageWaitTime    =  totalWaitTime*1.0  / requestDispatched;
-		AverageServiceTime =  totalServiceTime*1.0 / requestDispatched;
+		averageWaitTime    =  totalWaitTime*1.0  / (requestDispatched+requestRejected);
+		averageServiceTime =  totalServiceTime*1.0 / (requestDispatched+requestRejected);
+		averageActualServiceTime = totalActualServiceTime * 1.0 / (requestDispatched+requestRejected);
 
 		simulationClock = request.dispatchTime;
 	}
+
 	public void collectStatisticsForRejected(Request request){
 		simulationClock = request.arrivalTime;
 		requestRejected++;
 	}
 
-	public  StatisticsCollector getStats(){
-		StatisticsCollector data = new StatisticsCollector();
-		data.simulationClock = simulationClock;
-		data.requestDipatchedCount= requestDispatched;
-		data.requestRejectedCount = requestRejected;
-		data.requestInWaitQueue = simulator.getWaitQueue().size();
-		data.serversInUse = simulator.getServerManager().serversInUse.size();
-		data.averageServiceTime = AverageServiceTime;
-		data.averageWaitTime = averageWaitTime;
-		return data;
-	}
 }
