@@ -46,6 +46,10 @@ public class SimulationRunner{
         return this.serverManager;
     }
 
+    public double getPercentageCompelete(){
+    	return (double)this.serverManager.getSimulationTime()/this.params.MAX_CLOCK * 100;
+    }
+
     public void start() throws InterruptedException{
         log.info("Simulation Begin Time : " + new Date());
 
