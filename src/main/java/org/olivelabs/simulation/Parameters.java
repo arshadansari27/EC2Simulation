@@ -1,8 +1,11 @@
 package org.olivelabs.simulation;
 
+import java.util.Random;
+
 
 public class Parameters {
 	//public int waitQueueMaxSize = 20000;
+	public String taskId =  (new Random().nextInt())+"";
 	public int concurrentRequestLimit = 1000;
 	public int maxServer = 200;
 	public Long MAX_CLOCK = 3600L;
@@ -14,4 +17,5 @@ public class Parameters {
 	public int averageRequestServiceTime = 15;
 	public int maxRequestServiceTime = 30;
 	public int minRequestServiceTime = 3;
+	
 }

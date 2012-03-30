@@ -10,9 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 
 public class StatisticsCollector implements Serializable{
-    /**
-	 *
-	 */
+    	
 	private static final long serialVersionUID = 1L;
 	public Long simulationClock = 0L;
     public Long requestDipatchedCount = 0L;
@@ -38,7 +36,9 @@ public class StatisticsCollector implements Serializable{
 
     static Logger log = Logger.getLogger(StatisticsCollector.class.getName());
 
-
+    public StatisticsCollector(){
+    	
+    }
 
     public StatisticsCollector(ServerManager serverManager, List<Server> servers){
     	this.servers = servers.size();
